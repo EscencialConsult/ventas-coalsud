@@ -12,6 +12,8 @@
     "db:test:remoto": "node scripts/test-remoto.mjs",
     "db:concurrencia": "node scripts/concurrencia.mjs",
     "db:rendimiento": "node -e \"process.exit(require('node:child_process').spawnSync('psql', [process.env.SUPABASE_DB_URL, '-X', '-f', 'scripts/rendimiento.sql'], { stdio: 'inherit' }).status)\"",
+    "db:datos-prueba": "node -e \"process.exit(require('node:child_process').spawnSync('psql', [process.env.SUPABASE_DB_URL, '-X', '-f', 'scripts/datos-prueba.sql'], { stdio: 'inherit' }).status)\"",
+    "db:datos-prueba:limpiar": "node -e \"process.exit(require('node:child_process').spawnSync('psql', [process.env.SUPABASE_DB_URL, '-X', '-f', 'scripts/datos-prueba-limpiar.sql'], { stdio: 'inherit' }).status)\"",
     "db:diff": "supabase db diff -f",
     "db:push": "supabase db push --linked",
     "types": "node scripts/gen-types.mjs",

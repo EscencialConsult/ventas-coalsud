@@ -20,6 +20,8 @@ npx supabase db push --db-url "$SUPABASE_DB_URL"    # migraciones pendientes
 npm run db:test:remoto                               # pgTAP: cada archivo en una transacción con rollback
 npm run db:concurrencia                              # RNF-02 (crea y borra una regional ZQC aislada)
 npm run db:rendimiento                               # RNF-01/03 (volumen en una transacción con rollback)
+npm run db:datos-prueba                              # operación de prueba de 35 días para usar las pantallas (⚙ DT-43)
+npm run db:datos-prueba:limpiar                      # la borra y deja datos base + seeds
 SUPABASE_PROJECT_REF=menktqlsgtqooneyhalw SUPABASE_ACCESS_TOKEN='<token>' npm run types
 ```
 

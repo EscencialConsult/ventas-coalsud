@@ -52,7 +52,9 @@ backend/
 │   ├── gen-types.mjs                  genera tipos (local o del proyecto remoto) y los copia a ../frontend/src/types/database.ts
 │   ├── test-remoto.mjs                pgTAP contra dev sin Docker: cada archivo en una transacción con rollback (⚙ DT-30)
 │   ├── concurrencia.mjs               ventas simultáneas sobre el mismo stock y numeración en paralelo (RNF-02)
-│   └── rendimiento.sql                volumen de ~36.000 notas + mediciones, en una transacción con rollback (RNF-01)
+│   ├── rendimiento.sql                volumen de ~36.000 notas + mediciones, en una transacción con rollback (RNF-01)
+│   ├── datos-prueba.sql               operación de prueba de 35 días con las RPC reales, para usar las pantallas (⚙ DT-43)
+│   └── datos-prueba-limpiar.sql       borra esa operación y deja datos base + seeds
 │   (carga-inicial/ no se construye: la carga inicial real no se hace, ⚙ DT-41. La cartera inicial
 │    se carga desde la pantalla de Cobranzas con cargar_cartera_inicial)
 ├── package.json                       scripts npm (§3)
@@ -110,6 +112,8 @@ backend/
 | `db:test:remoto` | `node scripts/test-remoto.mjs [archivo]` | pgTAP contra dev sin Docker; necesita `SUPABASE_DB_URL` (⚙ DT-30) |
 | `db:concurrencia` | `node scripts/concurrencia.mjs` | RNF-02; necesita `SUPABASE_DB_URL`; crea una regional `ZQC` aislada y la borra al terminar |
 | `db:rendimiento` | `psql $SUPABASE_DB_URL -f scripts/rendimiento.sql` | RNF-01 / RNF-03; no deja datos |
+| `db:datos-prueba` | `psql $SUPABASE_DB_URL -f scripts/datos-prueba.sql` | carga la operación de prueba (⚙ DT-43); se niega si ya hay operación |
+| `db:datos-prueba:limpiar` | `psql $SUPABASE_DB_URL -f scripts/datos-prueba-limpiar.sql` | la borra (solo dev) |
 
 Cada script se agrega al `package.json` junto con la tarea que crea su archivo: `types` (BE-03), `fn:*` (BE-07), `db:test:remoto`, `db:concurrencia` y `db:rendimiento` (BE-22). Sin Docker, `npm run types` toma los tipos del proyecto remoto si están `SUPABASE_PROJECT_REF` y `SUPABASE_ACCESS_TOKEN`. Los scripts leen las variables del entorno (no del `.env`): exportarlas antes.
 

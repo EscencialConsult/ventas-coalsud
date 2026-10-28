@@ -93,6 +93,8 @@ Observaciones para el cliente:
 | `seeds/20_usuarios_prueba.sql` | Clientes, los mismos de los fixtures del frontend: LP → Hipermaxi La Paz, Andys, Macro Abasto, Mi Super, Tienda Rosita · CBBA → Hipermaxi Cochabamba, Super America · SCZ → Fidalga S.A. SCZ, Clínica Foianini (con vendedor, condición, categoría y canal) |
 | `50_liquidacion.test.sql` | Caso dorado ([Estrategia de Pruebas §5](Estrategia_de_Pruebas.md)): se arma dentro de la prueba, no hay seed aparte |
 | `scripts/rendimiento.sql` | Volumen para rendimiento (BE-22). Va **fuera** de `seeds/` y corre en una transacción con rollback: no deja datos |
+| ● `scripts/datos-prueba.sql` | **Operación de prueba** para usar todas las pantallas con datos (⚙ DT-43): 35 días hasta hoy en las tres regionales, cargados con las RPC reales como Vanessa, Fernando e Irene. Incluye clientes extra (`@prueba.coalsud`), inventario inicial, cartera inicial 2025–2026, pedidos, salida/venta/retorno de vendedor, traspasos, mermas, ~330 notas (contado, crédito, descuentos, precios modificados, anuladas), cobranzas (una anulada), cierres diarios con una reapertura, días anteriores abiertos (LP con una nota sin factura), devoluciones de hoy con NC contable y metas de presupuesto en distintos estados. Una transacción; se niega a correr si ya hay operación. Cargado en `VENTAS-COALSUD` el 28/10/2026 |
+| ● `scripts/datos-prueba-limpiar.sql` | Borra esa operación (y su auditoría y los clientes `@prueba.coalsud`) y deja datos base + seeds, para volver a cargar |
 
 ● **Usuarios de la entrega (⚙ DT-41).** Los cuatro usuarios de `20_usuarios_prueba.sql` son los usuarios definidos del sistema y quedan cargados en el proyecto `VENTAS-COALSUD`.
 

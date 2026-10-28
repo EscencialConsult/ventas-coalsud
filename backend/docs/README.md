@@ -34,7 +34,7 @@ La versión 1.0 original está en `Desktop/Coalsud/docs/` y no se modifica. Los 
 | [SRS](01-requerimiento/SRS.md) | 42 RF + 30 RNF, actores, glosario, verificación, trazabilidad, decisiones Q |
 | [Casos de Uso](01-requerimiento/Casos_de_Uso.md) | CU-01 a CU-12 |
 | [Casos de Prueba](01-requerimiento/Casos_de_Prueba.md) | 94 casos con su capa (BD / E2E), incluido el caso dorado F3 |
-| [Registro de Supuestos](01-requerimiento/Registro_de_Supuestos.md) | **55 supuestos + 42 decisiones técnicas** y las preguntas para el cliente |
+| [Registro de Supuestos](01-requerimiento/Registro_de_Supuestos.md) | **55 supuestos + 43 decisiones técnicas** y las preguntas para el cliente |
 
 ### 2 · Diseño
 | DOCUMENTO | CONTENIDO |
