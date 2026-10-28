@@ -1,5 +1,5 @@
 // Genera los tipos TypeScript de la base local y los copia al frontend (⚙ DT-13).
-// Requiere el stack levantado (npm run db:start) y el repo frontend como carpeta hermana (⚙ DT-12).
+// Requiere el stack levantado (npm run db:start) y la carpeta frontend/ hermana de backend/ (monorepo, ⚙ DT-12).
 import { execSync } from 'node:child_process'
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
@@ -10,7 +10,7 @@ const frontend = resolve(backend, '../frontend')
 const destino = resolve(frontend, 'src/types/database.ts')
 
 if (!existsSync(resolve(frontend, 'package.json'))) {
-  console.error(`No se encontró el repo frontend en ${frontend}. Debe estar clonado al lado de backend (⚙ DT-12).`)
+  console.error(`No se encontró la carpeta frontend en ${frontend}. Debe estar al lado de backend (monorepo, ⚙ DT-12).`)
   process.exit(1)
 }
 

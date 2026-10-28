@@ -1,0 +1,7 @@
+# Monorepo (⚙ DT-12): Netlify construye solo frontend/. Docs: backend/docs/04-ejecucion/Entornos_y_Despliegue.md §5
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+  # No reconstruye si el push no tocó frontend/
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- ."

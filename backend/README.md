@@ -8,7 +8,7 @@ La documentación (requerimientos, modelo de datos, seguridad, contrato de API) 
 
 - Node 20+ y npm.
 - Docker Desktop **abierto** (el stack local corre en contenedores).
-- Este repo y el de `frontend` clonados como carpetas hermanas dentro de `sistema-coalsud/` (⚙ DT-12).
+- Monorepo (⚙ DT-12): `frontend/` es carpeta hermana de `backend/` dentro del mismo repo.
 
 ## Levantar en local
 
@@ -47,7 +47,7 @@ Ver [Estructura del Backend §3](docs/04-ejecucion/Estructura_Backend.md). Los m
 | `db:reset` | recrea la base local: migraciones (con los datos base reales) + `seeds/*.sql` (datos de prueba) |
 | `db:test` | corre las pruebas pgTAP |
 | `db:push` | aplica las migraciones al proyecto vinculado (dev/prod) |
-| `types` | regenera `../frontend/src/types/database.ts` desde la base local (commitearlo en el repo frontend) |
+| `types` | regenera `../frontend/src/types/database.ts` desde la base local (se commitea en el mismo PR que la migración) |
 
 ## Flujo de trabajo y despliegue
 

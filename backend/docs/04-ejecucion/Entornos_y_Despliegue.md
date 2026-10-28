@@ -73,7 +73,7 @@ npm run types                                 # si cambió el esquema
 
 ## 5 · Despliegue del frontend
 
-- Netlify conectado al repo `frontend` (⚙ DT-18, igual que `comrural`):
+- Netlify conectado al monorepo con **Base directory `frontend`** (⚙ DT-12, DT-18; `netlify.toml` en la raíz del repo):
   - cada PR genera un *deploy preview* contra `dev`;
   - `main` despliega a producción contra `prod`.
 - Build command `npm run build`, publish directory `dist`.

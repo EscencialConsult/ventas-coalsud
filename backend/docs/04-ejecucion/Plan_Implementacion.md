@@ -21,10 +21,10 @@ Nada de precios, reglas ni permisos en el frontend: el frontend pide y la base d
 ## Sprint 0 · Setup (~26 h) ← EMPEZÁS ACÁ
 | ID | TAREA | H | DEPENDE |
 |---|---|---|---|
-| BE-01 | Repo `backend` + Supabase CLI + `supabase init` + Docker local + `package.json` de scripts | 4 | — |
+| BE-01 | Carpeta `backend/` + Supabase CLI + `supabase init` + Docker local + `package.json` de scripts | 4 | — |
 | BE-02 | Proyectos Supabase `dev` y `prod` (región sa-east-1); Auth: signups off, confirmación off, contraseña ≥ 8 | 3 | BE-01 |
 | BE-03 | Script `gen-types.mjs` | 1 | BE-01 |
-| FE-01 | Repo `frontend`: Vite + React 19 + TS + Tailwind 4 + React Router 7 + TanStack Query + supabase-js + oxlint + Vitest | 6 | — |
+| FE-01 | Carpeta `frontend/`: Vite + React 19 + TS + Tailwind 4 + React Router 7 + TanStack Query + supabase-js + oxlint + Vitest | 6 | — |
 | FE-02 | Hosting en Netlify (deploy preview + prod), variables de entorno, rewrite SPA con `_redirects` (⚙ DT-18) | 4 | FE-01 |
 | FE-03 | Árbol `core/shared/features`, tokens del sistema de diseño, componentes base (botón, input, tabla, badge, modal, toaster) | 8 | FE-01 |
 

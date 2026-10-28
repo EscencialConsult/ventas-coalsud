@@ -7,7 +7,7 @@ Esencial Consultora — El Alto / La Paz, Bolivia
 
 Define cómo se organiza el repositorio `backend/`, para que cualquier programador encuentre las cosas en el mismo lugar. El backend es un **proyecto Supabase** (⚙ DT-01): migraciones SQL, Edge Functions, seeds y pruebas pgTAP. No hay servidor propio.
 
-Es un repo propio, separado del de `frontend/` (⚙ DT-12). Los dos se clonan como carpetas hermanas dentro de `sistema-coalsud/`, porque `npm run types` escribe en `../frontend/`.
+Vive en el mismo repo que `frontend/` (monorepo, ⚙ DT-12): `npm run types` escribe en `../frontend/`.
 
 ---
 
@@ -109,7 +109,7 @@ Cada script se agrega al `package.json` junto con la tarea que crea su archivo: 
 
 1. Rama `feature/<area>-<tema>` desde `main`.
 2. `supabase migration new <tema>` → escribir el SQL → `npm run db:reset` → `npm run db:test`.
-3. Si cambió alguna firma: actualizar el [Contrato de API](../03-especificacion/Contrato_API.md) y correr `npm run types`. En el PR del frontend (otro repo, ⚙ DT-12), commitear `src/types/database.ts`.
+3. Si cambió alguna firma: actualizar el [Contrato de API](../03-especificacion/Contrato_API.md) y correr `npm run types`. En el mismo PR (monorepo, ⚙ DT-12), commitear `../frontend/src/types/database.ts`.
 4. PR con:
    - migración;
    - pruebas;

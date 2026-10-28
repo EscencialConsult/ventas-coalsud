@@ -8,7 +8,7 @@ Esencial Consultora — El Alto / La Paz, Bolivia
 Define cómo se organiza el código, para que cualquier programador encuentre las cosas en el mismo lugar.
 
 **● Cambios v1.1 respecto de la Estructura v1.0:**
-- La app vive en `sistema-coalsud/frontend/` (repo propio, ⚙ DT-12), clonada como carpeta hermana de `backend/`: de ahí llegan `src/types/database.ts` y los enlaces a `../../backend/docs/`.
+- La app vive en `frontend/` del monorepo (⚙ DT-12), hermana de `backend/`: de ahí llegan `src/types/database.ts` y los enlaces a `../../backend/docs/`.
 - Se agregan `*.queries.ts`, `core/errores`, `shared/export`, `shared/print` y las áreas `vendedores`, `configuracion` y `eecc`.
 - `supabase/` y `e2e/` se reparten: el esquema vive en `backend/` y las pruebas e2e en `frontend/e2e/`.
 

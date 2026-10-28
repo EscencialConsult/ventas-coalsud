@@ -10,7 +10,7 @@ App web (React) del Sistema Comercial de **COALSUD S.R.L.** La usan los administ
 
 ## Documentación compartida (vive en el backend)
 
-Las reglas de negocio tienen **una sola fuente**: `../../backend/docs/`. Está en otro repo (⚙ DT-12): estos enlaces funcionan con los dos repos clonados como carpetas hermanas, no en la web de GitHub.
+Las reglas de negocio tienen **una sola fuente**: `../../backend/docs/`. Está en la carpeta hermana `backend/` del monorepo (⚙ DT-12): los enlaces funcionan tanto en local como en la web de GitHub.
 
 | DOCUMENTO | PARA QUÉ LO NECESITA EL FRONTEND |
 |---|---|
