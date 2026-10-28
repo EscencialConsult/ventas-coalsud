@@ -1,1 +1,15 @@
+# Credenciales de Supabase (nunca al repo)
 CREDENCIALES.md
+
+# Red de seguridad para todo el monorepo (backend/ y frontend/ tienen además el suyo)
+node_modules/
+.env
+.env.*
+!.env.example
+*.log
+npm-debug.log*
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
