@@ -1,0 +1,18 @@
+/* Impresiones (07-Impresion §1): A4 sin márgenes del navegador; el resto va con clases. */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+/* Liquidación (07-Impresion §4.1): hoja horizontal con margen, para que el encabezado de la matriz se repita. */
+@page horizontal {
+  size: A4 landscape;
+  margin: 8mm;
+}
+
+@media print {
+  html,
+  body {
+    background: var(--color-fondo) !important;
+  }
+}

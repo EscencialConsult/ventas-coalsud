@@ -1,0 +1,22 @@
+{
+  "name": "coalsud-backend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:status": "supabase status",
+    "db:reset": "supabase db reset",
+    "db:test": "supabase test db",
+    "db:diff": "supabase db diff -f",
+    "db:push": "supabase db push --linked",
+    "types": "node scripts/gen-types.mjs",
+    "fn:serve": "supabase functions serve admin-usuarios",
+    "fn:deploy": "supabase functions deploy admin-usuarios"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.75.0",
+    "supabase": "^2.122.0"
+  }
+}

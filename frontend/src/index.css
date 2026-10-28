@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+/*
+  Design tokens de COALSUD. La marca sale de la demo aprobada por el cliente
+  (F1, Desktop/Coalsud/index (2).html); la v1.2 la enriquece con escalas,
+  relieve y densidad media (⚙ DT-20). Fuente de verdad: docs/04-Sistema_de_Diseno.md.
+  No inventar colores nuevos sin actualizar ese documento primero.
+*/
+@theme {
+  /* Marca */
+  --color-rojo: #c8401a;
+  --color-rojo-2: #d94b22;
+  --color-rojo-3: #a8341a;
+  --color-naranja: #d96518;
+  --color-dorado: #c48a14;
+  --color-rojo-tenue: rgb(200 64 26 / 0.08);
+  /* rojo-tenue sobre blanco, opaco: filas con celdas fijas (sticky) que no deben transparentar */
+  --color-rojo-tenue-solido: #fbf0ed;
+  --color-naranja-tenue: rgb(217 101 24 / 0.1);
+  --color-dorado-tenue: rgb(196 138 20 / 0.12);
+
+  /* Superficies */
+  --color-lienzo: #f3f3f1;
+  --color-fondo: #ffffff;
+  --color-fondo-2: #fafafa;
+  --color-fondo-3: #f4f4f4;
+  --color-superficie: #ececec;
+  --color-borde: #e4e4e2;
+  --color-borde-2: #cfcfcc;
+  --color-sidebar: #181818;
+  --color-sidebar-2: #222222;
+
+  /* Texto */
+  --color-texto: #141414;
+  --color-texto-2: #4f4f4f;
+  --color-texto-3: #767676; /* el gris más claro que cumple AA sobre blanco */
+
+  /* Estados (texto / fondo tenue) */
+  --color-ok: #1a7a4a;
+  --color-ok-fondo: rgb(26 122 74 / 0.09);
+  --color-error: #b83030;
+  --color-error-fondo: rgb(184 48 48 / 0.09);
+  --color-info: #2654a0;
+  --color-info-fondo: rgb(38 84 160 / 0.09);
+  --color-alerta: #a06820;
+  --color-alerta-fondo: rgb(160 104 32 / 0.1);
+  /* Encabezados de la liquidación: los colores de la planilla F3, en tono suave (07-Impresion §4) */
+  --color-planilla-items: #fbe7da;
+  --color-planilla-inicial: #edf4fb;
+  --color-planilla-pedido: #fff7e0;
+  --color-planilla-traspaso: #ececec;
+  --color-planilla-credito: #e5f0de;
+  --color-planilla-final: #dce9f6;
+
+  /* Tipografía (densidad media, ⚙ DT-22): Inter para todo, con cifras
+     tabulares en montos y cantidades; Plus Jakarta Sans solo en el logotipo. */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-marca: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --text-micro: 10px;
+  --text-mini: 11px;
+  --text-chico: 12px;
+  --text-cuerpo: 13px;
+  --text-medio: 14px;
+  --text-subtitulo: 15px;
+  --text-titulo: 22px;
+  --text-cifra: 20px;
+  --text-kpi: 24px;
+  --text-portada: 30px;
+
+  /* Forma */
+  --radius-card: 14px;
+  --radius-control: 9px;
+
+  /* Profundidad: cards planas con sombra corta; controles con relieve suave
+     y presionado hundido (botones estilo neumórfico, sin brillos). */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 2px 8px rgb(0 0 0 / 0.04);
+  --shadow-elevado: 0 4px 12px rgb(0 0 0 / 0.08), 0 16px 40px rgb(0 0 0 / 0.1);
+  --shadow-relieve: 3px 3px 8px rgb(0 0 0 / 0.1), -3px -3px 8px rgb(255 255 255 / 0.95);
+  --shadow-relieve-alto: 4px 4px 11px rgb(0 0 0 / 0.13), -4px -4px 11px rgb(255 255 255 / 1);
+  --shadow-hundido: inset 3px 3px 7px rgb(0 0 0 / 0.12), inset -3px -3px 7px rgb(255 255 255 / 0.9);
+  /* Interruptor: pista hundida y perilla en relieve, a su escala */
+  --shadow-pista: inset 2px 2px 4px rgb(0 0 0 / 0.2), inset -2px -2px 4px rgb(255 255 255 / 0.95);
+  --shadow-perilla: 2px 2px 4px rgb(0 0 0 / 0.3), -1px -1px 3px rgb(255 255 255 / 0.9);
+  --shadow-hundido-marca: inset 3px 3px 8px rgb(0 0 0 / 0.3), inset -2px -2px 6px rgb(255 255 255 / 0.1);
+
+  /* Layout */
+  --spacing-sidebar: 248px;
+  --spacing-sidebar-mini: 72px;
+  --spacing-topbar: 60px;
+}
+
+@layer base {
+  html {
+    font-size: 14px;
+  }
+  body {
+    margin: 0;
+    background-color: var(--color-lienzo);
+    color: var(--color-texto);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background-color: rgb(200 64 26 / 0.16);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-rojo);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility animar-entrada {
+  animation: aparecer 0.18s ease;
+}
+
+@utility scroll-fino {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-borde-2) transparent;
+}
+
+@utility scroll-fino-oscuro {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.14) transparent;
+}

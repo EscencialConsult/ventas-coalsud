@@ -1,0 +1,6 @@
+// CORS para las llamadas del frontend (supabase.functions.invoke).
+export const cabecerasCors = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
