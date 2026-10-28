@@ -49,7 +49,7 @@ Esencial Consultora — El Alto / La Paz, Bolivia
 | Storage | Bucket `facturas` (privado, 10 MB, `application/pdf`), creado por migración |
 | Backups (prod) | Diarios (plan Pro, 7 días de retención); evaluar PITR si el cliente lo requiere |
 
-● **Estado de `VENTAS-COALSUD` (28/10/2026).** Cumplen: Exposed schemas sin `app`, Max rows 1000, JWT de 3600 s, bucket `facturas`. **Pendiente de ajustar en el panel** (Authentication → Sign In / Providers y Policies; API → Settings): `Allow new users to sign up` = off, `Confirm email` = off, mínimo de contraseña 8 (hoy 6), Exposed schemas solo `public` (hoy también `graphql_public`) y Site URL = dominio del frontend cuando exista (hoy `http://localhost:3000`). Mientras tanto, una cuenta creada por signup no ve datos (sin fila en `usuario`, `mi_perfil` → `NO_AUTORIZADO`).
+● **Estado de `VENTAS-COALSUD` (28/10/2026).** Cumplen: Exposed schemas sin `app`, Max rows 1000, JWT de 3600 s, bucket `facturas`. Contraseña mínima: **8** (aplicado el 28/10/2026). **Pendiente de decidir y ajustar en el panel** (Authentication → Sign In / Providers; API → Settings): `Allow new users to sign up` = off, `Confirm email` = off, Exposed schemas solo `public` (hoy también `graphql_public`) y Site URL = dominio del frontend cuando exista (hoy `http://localhost:3000`). Mientras tanto, una cuenta creada por signup no ve datos (sin fila en `usuario`, `mi_perfil` → `NO_AUTORIZADO`).
 
 ---
 

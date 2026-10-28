@@ -23,7 +23,7 @@ Nada de precios, reglas ni permisos en el frontend: el frontend pide y la base d
 | TAREAS | ESTADO |
 |---|---|
 | BE-01, BE-03 a BE-19 | ✅ Hechas y aplicadas en `VENTAS-COALSUD` (dev) |
-| BE-02 | ◐ Hay un solo proyecto (`VENTAS-COALSUD`, us-east-1, ⚙ DT-30); `prod` no existe. Falta ajustar Auth en el panel (signups off, contraseña ≥ 8, [Entornos §3](Entornos_y_Despliegue.md)) |
+| BE-02 | ◐ Hay un solo proyecto (`VENTAS-COALSUD`, us-east-1, ⚙ DT-30); `prod` no existe. Contraseña mínima 8 aplicada; falta decidir signups off y confirmación off ([Entornos §3](Entornos_y_Despliegue.md)) |
 | BE-20 | ✅ `eecc_consolidado` + `app.saldo_documento` (⚙ DT-38) |
 | BE-21 | ✅ Reportes, `reporte_movimiento_periodo`, `cumplimiento_presupuesto`, `dashboard_kpis`, `avisos_shell`, `v_auditoria` + `60_eecc_reportes.test.sql` (⚙ DT-31 a DT-37) |
 | BE-22 | ✅ `verificar_stock`, `70_integridad.test.sql`, concurrencia y rendimiento ([Estrategia de Pruebas §6](Estrategia_de_Pruebas.md)); lecturas optimizadas (⚙ DT-39). Checklist RLS: ver [Seguridad RLS §10](../02-diseno/Seguridad_RLS.md) |

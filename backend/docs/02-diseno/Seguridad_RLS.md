@@ -284,7 +284,8 @@ La batería completa se corre con pgTAP (`supabase test db`, archivo `tests/10_r
 - ✅ RLS en todas las tablas, `anon` sin privilegios, sin políticas de escritura transaccionales, inmutabilidad: lo verifica `70_integridad.test.sql`.
 - ✅ `service_role` solo en la Edge Function (variable del entorno de Supabase) y en `CREDENCIALES.md`, que está en `.gitignore`.
 - ✅ `app` no expuesto; ⚠ la API expone `public` y `graphql_public` (el valor de Supabase por defecto; la doc pide solo `public`).
-- ⚠ **Auth todavía con signups habilitados, contraseña mínima de 6 y confirmación de correo activa**: hay que dejar `disable_signup = true`, mínimo 8 y confirmación off (Entornos §3). Una cuenta creada por signup no ve nada (no tiene fila en `usuario`: `mi_perfil` → `NO_AUTORIZADO`), pero la regla es cerrarlo.
+- ✅ Contraseña mínima de 8 (28/10/2026).
+- ⚠ **Auth todavía con signups habilitados y confirmación de correo activa**: hay que dejar `disable_signup = true` y la confirmación off (Entornos §3). Una cuenta creada por signup no ve nada (no tiene fila en `usuario`: `mi_perfil` → `NO_AUTORIZADO`), pero la regla es cerrarlo.
 - ✅ Pruebas en verde con `npm run db:test:remoto` (14 archivos, 333 pruebas).
 - ⚠ Backups: según el plan del proyecto (⚠ SUP-40).
 
