@@ -28,12 +28,26 @@ const ETIQUETAS: Record<string, string> = {
   items: 'Productos',
   total_ventas: 'Total ventas',
   insertados: 'Documentos cargados',
+  documentos: 'Documentos cargados',
   descuento_pct: 'Descuento',
   descuento_bs: 'Descuento en Bs',
   producto: 'Producto',
+  numero: 'N°',
+  fecha: 'Fecha',
+  nc_contable_numero: 'N° de nota de crédito',
+  total_contado_bruto: 'Contado bruto',
+  total_credito_bruto: 'Crédito bruto',
+  descuento_contado: 'Descuento contado',
+  descuento_credito: 'Descuento crédito',
+  total_cobranzas: 'Cobranzas',
+  total_reembolsos: 'Reembolsos',
+  total_efectivo: 'Total efectivo',
 }
 
-const MONTOS = new Set(['total', 'importe', 'total_ventas', 'descuento_bs'])
+const MONTOS = new Set([
+  'total', 'importe', 'total_ventas', 'descuento_bs', 'bruto', 'precio_base',
+  'total_contado_bruto', 'total_credito_bruto', 'descuento_contado', 'descuento_credito', 'total_cobranzas', 'total_reembolsos', 'total_efectivo',
+])
 
 /** Cuando "antes" y "después" son un solo valor (no un objeto), qué campo es. */
 const VALOR_DE: Partial<Record<AccionAuditoria, string>> = { cambio_precio: 'Precio unitario' }
@@ -43,6 +57,7 @@ const etiqueta = (clave: string) => ETIQUETAS[clave] ?? clave.charAt(0).toUpperC
 function texto(clave: string, valor: unknown): string {
   if (valor === null || valor === undefined || valor === '') return '—'
   if (typeof valor === 'boolean') return valor ? 'Sí' : 'No'
+  if (Array.isArray(valor)) return clave === 'items' ? `${valor.length} productos` : String(valor.length)
   if (clave === 'pdf') return 'Adjuntado'
   if (clave === 'forma_pago') return etiquetaFormaPago(valor as FormaPago)
   if (clave === 'tipo_reverso') return TIPOS_REVERSO[valor as TipoReverso]?.etiqueta ?? String(valor)
@@ -89,5 +104,7 @@ export function detalleLegible(accion: AccionAuditoria, datos: Record<string, un
     const textoDespues = texto(clave, despues)
     cambios.push({ campo: VALOR_DE[accion] ?? 'Valor', antes: textoAntes, despues: textoDespues, cambio: textoAntes !== textoDespues })
   }
-  return { cambios, datos: Object.entries(resto).map(([clave, valor]) => ({ campo: etiqueta(clave), valor: texto(clave, valor) })) }
+  // Un objeto anidado (p. ej. los totales del cierre) se muestra campo por campo.
+  const planos = Object.entries(resto).flatMap(([clave, valor]) => (esObjeto(valor) ? Object.entries(valor) : [[clave, valor] as const]))
+  return { cambios, datos: planos.map(([clave, valor]) => ({ campo: etiqueta(clave), valor: texto(clave, valor) })) }
 }

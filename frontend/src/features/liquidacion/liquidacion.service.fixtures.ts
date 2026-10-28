@@ -203,7 +203,7 @@ export const liquidacionFixtures: ServicioLiquidacion = {
     const indice = LIQUIDACIONES_ABIERTAS.findIndex((l) => l.regional_id === regionalId && l.fecha === fecha)
     if (indice >= 0) LIQUIDACIONES_ABIERTAS.splice(indice, 1)
     CIERRES.set(clave(regionalId, fecha), { por: perfilDemoActual()?.nombre ?? 'Sistema', en: ahoraBolivia() })
-    auditar({ regional_id: regionalId, entidad: 'liquidacion', entidad_id: clave(regionalId, fecha), registro: fecha, accion: 'cerrar_dia', datos: { total_ventas: totales(regionalId, fecha).pie.total_ventas } })
+    auditar({ regional_id: regionalId, entidad: 'liquidacion', entidad_id: clave(regionalId, fecha), registro: fecha, accion: 'cerrar_dia', datos: { fecha, totales: { total_ventas: totales(regionalId, fecha).pie.total_ventas } } })
     return responder({ id: clave(regionalId, fecha), estado: 'cerrada' as const, totales: totales(regionalId, fecha).pie })
   },
 

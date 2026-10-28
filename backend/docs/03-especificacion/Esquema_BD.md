@@ -337,7 +337,7 @@ Triggers: `app.tg_bloqueo_dia` (salvo cambios solo de columnas de factura), `app
 | categoria_cliente | text | sí | | mismo `check` que `cliente.categoria` |
 | meta | numeric(14,2) | no | | `check (meta > 0)` |
 | observaciones | text | sí | | |
-| usuario_id | uuid | no | | FK `usuario` |
+| usuario_id | uuid | no | | FK `usuario`; lo pone `app.tg_presupuesto_usuario` con `auth.uid()` (⚙ DT-35) |
 | created_at / updated_at | timestamptz | no | now() | |
 | | | | | `unique nulls not distinct (periodo, regional_id, vendedor_id, categoria_cliente)` |
 
@@ -377,6 +377,7 @@ Triggers: `app.tg_bloqueo_dia` (salvo cambios solo de columnas de factura), `app
 | `v_devolucion` | `devolucion` + `importe`, `nota_numero`, `cliente_id`, `cliente_nombre`, `usuario_nombre` (⚙ DT-27) | Listado de devoluciones |
 | `v_cobranza` | `cobranza` + `tipo_doc`, `cliente_id`, `cliente_nombre`, `documento_numero`, `numero_factura`, `vendedor_id`, `dia_cerrado`, `usuario_nombre` (⚙ DT-27) | Bloque de cobranzas, listados |
 | `v_liquidacion` | `liquidacion` + `regional_codigo`, `cerrada_por_nombre` | Historial de liquidaciones |
+| `v_auditoria` (⚙ DT-29, DT-37) | `auditoria` + `usuario_nombre` ('Sistema' si es nulo), `regional_codigo`, `registro` (N° del documento, fecha de la liquidación, nombre de la regional en la cartera inicial, período del presupuesto o nombre del maestro / usuario) | Auditoría (solo nacional, por la RLS de `auditoria`) |
 
 ---
 
@@ -386,7 +387,7 @@ Triggers: `app.tg_bloqueo_dia` (salvo cambios solo de columnas de factura), `app
 |---|---|---|
 | `hoy` | `() returns date` | `(now() at time zone 'America/La_Paz')::date` |
 | `usuario_activo` · `is_nacional` · `mis_regionales` · `puede_leer_regional` · `puede_escribir_regional` | ver [Seguridad RLS §3](../02-diseno/Seguridad_RLS.md) | `stable security definer` |
-| `error` | `(p_codigo text, p_mensaje text, p_detalle jsonb default null) returns void` | `raise exception using errcode = 'P0001', message = p_mensaje, hint = p_codigo, detail = p_detalle::text` |
+| `error` | `(p_codigo text, p_mensaje text, p_detalle jsonb default null) returns void` | `raise exception using errcode = 'P0001', message = p_mensaje, hint = p_codigo, detail = p_detalle::text`. Habilitada a `authenticated` para las lecturas invoker que validan (⚙ DT-36) |
 | `exigir_activo` | `() returns void` | usuario con `activo = false` → `USUARIO_INACTIVO` |
 | `exigir_escritura` | `(p_regional uuid) returns void` | `exigir_activo()`; si no `puede_escribir_regional` → `NO_AUTORIZADO` |
 | `exigir_nacional` | `() returns void` | `exigir_activo()`; si no es nacional → `SOLO_NACIONAL` |
@@ -399,7 +400,7 @@ Triggers: `app.tg_bloqueo_dia` (salvo cambios solo de columnas de factura), `app
 | `auditar` | `(p_accion, p_entidad, p_entidad_id, p_regional, p_datos jsonb) returns void` | inserta en `auditoria` con `auth.uid()` |
 | `calcular_liquidacion` | `(p_regional uuid, p_fecha date) returns setof app.t_linea_liquidacion` | Líneas en vivo ([Reglas §3.1](Reglas_de_Calculo.md)) |
 | `totales_liquidacion` | `(p_regional uuid, p_fecha date) returns app.t_totales_liquidacion` | [Reglas §3.2–3.3](Reglas_de_Calculo.md) |
-| `saldo_documento` | `(p_tipo text, p_id uuid, p_corte date default null) returns numeric` | [Reglas §5](Reglas_de_Calculo.md) |
+| `saldo_documento` | `(p_tipo text, p_id uuid, p_corte date default null) returns numeric` | [Reglas §5](Reglas_de_Calculo.md) (BE-20). Un documento; para muchos se usa `documentos_por_cobrar` |
 | `comparte_regional` | `(p_usuario uuid) returns boolean` | el usuario comparte alguna regional con el de la sesión (política de `usuario`) |
 | `carpeta_regional` | `(p_ruta text) returns uuid` | primera carpeta de una ruta de Storage como uuid, o null (políticas de `facturas`) |
 | `usuario_json` · `validar_rol_regionales` · `asignar_regionales` · `auditar_usuario` | ver migración `perfil_y_usuarios` | helpers de las RPC `admin_*` (admin-usuarios, solo `service_role`) |
@@ -409,7 +410,10 @@ Triggers: `app.tg_bloqueo_dia` (salvo cambios solo de columnas de factura), `app
 | `cuenta_nota` | `(p_nota uuid) returns table (total, cobrado, abonado, reembolsado, saldo)` | cuenta de una nota (Reglas §1, §4, §5); topes de abono, reembolso y cobranza |
 | `saldo_cartera` | `(p_cxc uuid) returns numeric` | importe − cobranzas vigentes de un documento de cartera inicial |
 | `nombre_usuario` | `(p_id uuid) returns text` | solo el nombre, aunque la RLS de `usuario` oculte la fila (p. ej. quien envió un traspaso desde otra regional); lo usan las vistas |
-| `verificar_stock` | `() returns table (almacen_id, vendedor_id, producto_id, saldo_tabla, saldo_movimientos)` | filas con diferencia; debe devolver 0 filas |
+| `verificar_stock` | `() returns table (almacen_id, vendedor_id, producto_id, saldo_tabla, saldo_movimientos)` | filas con diferencia; debe devolver 0 filas (BE-22; solo `postgres` / `service_role`) |
+| `ventas_netas` | `(p_desde date, p_hasta date) returns table (origen, regional_id, fecha, nota_venta_id, cliente_id, vendedor_id, importe)` | partidas de ventas netas: + total de cada nota emitida del rango, − importe de cada devolución del rango con los datos de la nota (⚙ DT-31). Definer acotado a `mis_regionales()` (⚙ DT-39) |
+| `documentos_por_cobrar` | `(p_corte date) returns table (tipo_doc, documento_id, regional_id, cliente_id, fecha, vence, saldo)` | notas a crédito y cartera inicial con su saldo a la fecha de corte, en conjuntos (EECC y CxC del dashboard). Incluye los saldados. Definer acotado a `mis_regionales()` (⚙ DT-39) |
+| `tg_presupuesto_usuario` | trigger | `presupuesto.usuario_id := coalesce(auth.uid(), usuario_id)` (⚙ DT-35) |
 
 ---
 
@@ -429,6 +433,7 @@ Triggers: `app.tg_bloqueo_dia` (salvo cambios solo de columnas de factura), `app
 | `tg_ultimo_nacional` | `usuario` | before update/delete | ≥ 1 nacional activo |
 | `tg_regional_codigo` | `regional` | before update | no cambiar `codigo` si existe algún `correlativo.ultimo > 0` (`VALIDACION`) |
 | `tg_usuario_regional_rol` | `usuario_regional` | before insert/update | solo usuarios con `rol = 'regional'` (`VALIDACION`) |
+| `tg_presupuesto_usuario` (BE-21) | `presupuesto` | before insert | `usuario_id` = el usuario de la sesión (⚙ DT-35) |
 
 ---
 
@@ -489,5 +494,10 @@ create type app.t_totales_liquidacion as (
 | 17 | `<fecha>_rpc_liquidacion.sql` | cálculo, reporte, cierre, reapertura |
 | 18 | `<fecha>_rpc_reportes.sql` | EECC, vendedores, presupuesto, reportes, dashboard |
 | 19 | `20261027190929_storage.sql` | bucket `facturas` + políticas |
+| 18a | `20261028164451_eecc.sql` | `app.saldo_documento`, `eecc_consolidado` (BE-20) |
+| 18b | `20261028164453_reportes.sql` | `app.ventas_netas`, reportes comerciales, `reporte_movimiento_periodo`, `tg_presupuesto_usuario`, `cumplimiento_presupuesto`, `dashboard_kpis`, `avisos_shell`, `v_auditoria` (BE-21) |
+| 20 | `20261028164456_integridad.sql` | `app.verificar_stock` (BE-22) |
+| 20b | `20261028170948_eecc_rendimiento.sql` | `eecc_consolidado` en conjuntos (BE-22, RNF-01) |
+| 20c | `20261028173326_rendimiento_lecturas.sql` | `app.ventas_netas`, `reporte_productos_vendidos` definer acotados; `app.documentos_por_cobrar`; `dashboard_kpis` y `eecc_consolidado` sobre ella (BE-22, ⚙ DT-39) |
 
-1–12, 12b–12d, 13a, 14, 15a–15d, 16a, 17a, 17b y 19 ya existen (BE-04 a BE-19). Las siguientes se crean con `supabase migration new <nombre>`, que les pone la fecha del día: así quedan siempre después de las anteriores. No usar fechas futuras a mano.
+Todas las de la tabla existen y están aplicadas en dev (BE-04 a BE-22); las filas 13, 15, 16, 17 y 18 sin fecha son el plan original, repartido en las migraciones con fecha. Una migración aplicada no se edita: los cambios van en una nueva (como 20b y 20c). Las siguientes se crean con `supabase migration new <nombre>`, que les pone la fecha del día: así quedan siempre después de las anteriores. No usar fechas futuras a mano.

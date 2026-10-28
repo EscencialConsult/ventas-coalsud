@@ -10,6 +10,21 @@ La documentación (requerimientos, modelo de datos, seguridad, contrato de API) 
 - Docker Desktop **abierto** (el stack local corre en contenedores).
 - Monorepo (⚙ DT-12): `frontend/` es carpeta hermana de `backend/` dentro del mismo repo.
 
+## Entorno en uso: dev en Supabase, sin Docker (⚙ DT-30)
+
+El proyecto `VENTAS-COALSUD` (ref `menktqlsgtqooneyhalw`) tiene todas las migraciones, la Edge Function `admin-usuarios` y los usuarios definitivos (⚙ DT-41). Las credenciales están en `../CREDENCIALES.md` (fuera de git). Con las variables exportadas:
+
+```bash
+export SUPABASE_DB_URL='<pooler de sesión>'          # de CREDENCIALES.md
+npx supabase db push --db-url "$SUPABASE_DB_URL"    # migraciones pendientes
+npm run db:test:remoto                               # pgTAP: cada archivo en una transacción con rollback
+npm run db:concurrencia                              # RNF-02 (crea y borra una regional ZQC aislada)
+npm run db:rendimiento                               # RNF-01/03 (volumen en una transacción con rollback)
+SUPABASE_PROJECT_REF=menktqlsgtqooneyhalw SUPABASE_ACCESS_TOKEN='<token>' npm run types
+```
+
+Nunca contra prod.
+
 ## Levantar en local
 
 ```bash
@@ -47,7 +62,9 @@ Ver [Estructura del Backend §3](docs/04-ejecucion/Estructura_Backend.md). Los m
 | `db:reset` | recrea la base local: migraciones (con los datos base reales) + `seeds/*.sql` (datos de prueba) |
 | `db:test` | corre las pruebas pgTAP |
 | `db:push` | aplica las migraciones al proyecto vinculado (dev/prod) |
-| `types` | regenera `../frontend/src/types/database.ts` desde la base local (se commitea en el mismo PR que la migración) |
+| `types` | regenera `../frontend/src/types/database.ts` desde la base local, o del proyecto remoto con `SUPABASE_PROJECT_REF` + `SUPABASE_ACCESS_TOKEN` (se commitea en el mismo PR que la migración) |
+| `db:test:remoto` | pgTAP contra dev sin Docker (`SUPABASE_DB_URL`) |
+| `db:concurrencia` / `db:rendimiento` | pruebas de concurrencia y de volumen contra dev, sin dejar datos |
 
 ## Flujo de trabajo y despliegue
 

@@ -13,9 +13,14 @@ import { FiltroFechas } from '@/shared/ui/FiltroFechas'
 import { BarraFiltros } from '@/shared/ui/FiltroSelect'
 import { Interruptor } from '@/shared/ui/Interruptor'
 import { SeccionConsulta } from '@/shared/ui/SeccionConsulta'
+import type { FilaMovimiento } from '@/core/models/reportes'
+import { PieMovimiento } from './components/PieMovimiento'
 import { parametrosImpresion } from './reportes.formato'
 import { reportesService } from './reportes.service'
 import { useFiltrosReporte } from './useFiltrosReporte'
+
+const CLAVES_BS = ['saldo_inicial_bs', 'pedido_bs', 'traspaso_bs', 'devolucion_bs', 'ajuste_bs', 'saldo_final_bs'] as const
+const esClaveBs = (clave: string): clave is keyof FilaMovimiento & (typeof CLAVES_BS)[number] => (CLAVES_BS as readonly string[]).includes(clave)
 
 // Movimiento por período (⚠ SUP-54): la matriz de la liquidación acumulada en
 // el rango, para el cuadre de fin de mes. Por regional.
@@ -40,11 +45,17 @@ export default function MovimientoTab() {
       columnas: [
         { titulo: 'Línea', valor: (f) => f.linea },
         { titulo: 'Producto', valor: (f) => f.producto },
-        ...columnasMatriz(datos.columnas_extra).map((c) => ({
-          titulo: c.grupo ? `${c.grupo} ${c.titulo}` : c.titulo,
-          formato: c.formato === 'monto' ? ('monto' as const) : ('cantidad' as const),
-          valor: (f: (typeof filas)[number]) => f[c.clave],
-        })),
+        // Cada columna de cantidad, seguida de su valor en Bs (Reglas §9).
+        ...columnasMatriz(datos.columnas_extra).flatMap((c) => {
+          const columna = {
+            titulo: c.grupo ? `${c.grupo} ${c.titulo}` : c.titulo,
+            formato: c.formato === 'monto' ? ('monto' as const) : ('cantidad' as const),
+            valor: (f: (typeof filas)[number]) => f[c.clave],
+          }
+          const claveBs = `${c.clave}_bs`
+          if (!esClaveBs(claveBs)) return [columna]
+          return [columna, { titulo: `${c.titulo} BS`, formato: 'monto' as const, valor: (f: (typeof filas)[number]) => f[claveBs] }]
+        }),
       ],
     })
   }
@@ -70,7 +81,14 @@ export default function MovimientoTab() {
       {regionalActivaId === null ? (
         <EmptyState icono={ChartColumn} titulo="Elija una regional" detalle="El movimiento por período se calcula por regional: elíjala arriba, en el selector." />
       ) : (
-        <SeccionConsulta consulta={consulta}>{(datos) => <MatrizLiquidacion reporte={datos} completo={completo} />}</SeccionConsulta>
+        <SeccionConsulta consulta={consulta}>
+          {(datos) => (
+            <>
+              <MatrizLiquidacion reporte={datos} completo={completo} />
+              <PieMovimiento pie={datos.pie} />
+            </>
+          )}
+        </SeccionConsulta>
       )}
     </>
   )

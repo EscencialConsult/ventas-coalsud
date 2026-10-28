@@ -13,10 +13,10 @@ En este sistema, la base de datos **es** el backend: la seguridad, los cálculos
 
 | NIVEL | HERRAMIENTA | QUÉ CUBRE | CUÁNDO |
 |---|---|---|---|
-| Unitario de BD | **pgTAP** (`supabase test db`) | Cada RPC (camino normal + cada error del contrato), triggers, RLS, cálculos | En cada PR (CI) |
+| Unitario de BD | **pgTAP** (`supabase test db`, o `npm run db:test:remoto` contra dev sin Docker, ⚙ DT-30) | Cada RPC (camino normal + cada error del contrato), triggers, RLS, cálculos | En cada PR (CI) |
 | Integridad | pgTAP + `app.verificar_stock()` | Invariantes globales (§4) | En cada PR y semanalmente en prod (solo lectura) |
-| Concurrencia | `scripts/concurrencia.mjs` (dos conexiones) | Sin sobreventa ni números duplicados (RNF-02) | Antes de cada release |
-| Rendimiento | `explain analyze` sobre un seed de volumen | RNF-01 (reporte ≤ 5 s), RNF-03 (listados ≤ 1 s) | Sprint 8 |
+| Concurrencia | `scripts/concurrencia.mjs` (`npm run db:concurrencia`: sesiones psql en paralelo) | Sin sobreventa ni números duplicados (RNF-02) | Antes de cada release |
+| Rendimiento | `scripts/rendimiento.sql` (`npm run db:rendimiento`): volumen dentro de una transacción con rollback (§6) | RNF-01 (reporte ≤ 5 s), RNF-03 (listados ≤ 1 s) | Antes de cada release |
 | Edge Function | `deno test` + llamada real en local | Permisos y validaciones de `admin-usuarios` | En cada PR que la toque |
 
 ---
@@ -75,9 +75,15 @@ Cada archivo corre dentro de una transacción con `rollback`: las pruebas no se 
 | `40_cobranzas.test.sql` | CP-07.1, CP-07.3 a CP-07.8 |
 | `50_liquidacion.test.sql` | CP-08.1 a CP-08.4, CP-08.7 a CP-08.15, **CP-08.10 caso dorado F3** |
 | `52_cierre.test.sql` | CP-06.5, CP-08.4, CP-08.7, CP-08.8, CP-08.9, CP-08.11, §9.6: cierre secuencial, facturas pendientes, snapshot congelado, reapertura del último día, día sin movimiento |
-| `60_eecc_reportes.test.sql` | CP-09.2, CP-09.3, CP-10.1, CP-10.2, CP-12.1, CP-12.2 |
-| `70_integridad.test.sql` | §4 de este documento |
+| `60_eecc_reportes.test.sql` | CP-09.2, CP-09.3, CP-09.4, CP-10.1, CP-10.2, CP-10.3, CP-11.1, CP-11.3: EECC (columnas, mora, grupos, KPIs, filtros, a hoy), reportes, movimiento por período, presupuesto, dashboard, avisos y `v_auditoria`. La cartera es **sintética**: CP-12.1 y CP-12.2 no se prueban porque la carga inicial real no se hace (⚙ DT-41) |
+| `70_integridad.test.sql` | §4 de este documento (los 11 invariantes, sobre un escenario con todas las operaciones) |
 | `scripts/concurrencia.mjs` | CP-05.12, RNF-02 |
+
+### 3.1 · Correr las pruebas sin Docker (⚙ DT-30)
+
+`SUPABASE_DB_URL=<pooler de dev> npm run db:test:remoto` (o `-- 40_cobranzas` para un archivo). Cada archivo corre en **una sola transacción** junto con los helpers de `00_setup.sql` y termina en `rollback`: no deja datos, ni el esquema `tests`, ni la extensión `pgtap`. `tests.vaciar()` trunca las tablas dentro de esa transacción, así que mientras corre un archivo (segundos) las demás sesiones esperan: no se corre en horario de uso ni contra prod.
+
+Estado al 28/10/2026: **14 archivos en verde (333 pruebas)** contra dev.
 
 ---
 
@@ -119,9 +125,25 @@ La prueba verifica fila por fila las columnas de la planilla y los totales: Cont
 
 ## 6 · Datos de volumen (rendimiento)
 
-Seed `seeds/90_volumen.sql` (solo local):
-- 3 regionales, ~150 productos y 300 clientes;
-- 60 días con 200 notas por día y regional (~36.000 notas, ~180.000 ítems).
+`scripts/rendimiento.sql` (no es un seed: corre en una transacción con `rollback` y no deja datos):
+- usa las regionales, productos (~124) y vendedores cargados y agrega 300 clientes;
+- 60 días con 200 notas por día y regional (36.000 notas, 180.000 ítems y 180.000 movimientos) y un cobro parcial en un tercio de las notas a crédito;
+- mide como el nacional (todas las regionales), que es el caso más pesado.
+
+Resultado en dev (28/10/2026; cada tiempo incluye ~0,13 s de red hasta us-east-1):
+
+| LECTURA | TIEMPO |
+|---|---|
+| `reporte_liquidacion` (día abierto, en vivo) | 0,75 s |
+| `eecc_consolidado` (todas, a hoy) | 1,05 s (6,1 s antes de ⚙ DT-39) |
+| `dashboard_kpis` (todas, mes en curso, con CxC) | 2,0 s |
+| `reporte_top_clientes` (60 días) | 1,1 s |
+| `reporte_movimiento_periodo` (30 días) | 0,76 s |
+| `avisos_shell` | 0,23 s |
+| `v_nota_venta` página 1 + count exact | 0,15 s |
+| `v_saldo_documento` de un cliente | 0,17 s |
+
+Todo dentro de RNF-01 y RNF-03. Las lecturas calculadas que recorren ítems son `security definer` acotadas a `app.mis_regionales()` (⚙ DT-39): como invoker, la política de las tablas hijas se evaluaba por cada ítem.
 
 Objetivos:
 - `reporte_liquidacion` < 5 s;

@@ -12,8 +12,8 @@ Esencial Consultora — El Alto / La Paz, Bolivia
 | ENTORNO | BACKEND | FRONTEND | DATOS | QUIÉN |
 |---|---|---|---|---|
 | **local** | `supabase start` (Docker): API `http://127.0.0.1:54321`, Studio `:54323`, DB `:54322` | `npm run dev` (Vite, `:5173`) datos base (migración) + `seeds/*.sql` | cada desarrollador |
-| **dev** | Proyecto Supabase `coalsud-dev` (Free o Pro, sa-east-1) | Deploy preview de Netlify por PR | seeds de prueba + datos de demo | equipo y validación con el cliente |
-| **prod** | Proyecto Supabase `coalsud-prod` (**Pro**, sa-east-1, ⚠ SUP-40) | Netlify producción (⚙ DT-18; dominio a definir, p. ej. `comercial.coalsud.com.bo`) | datos reales | regionales y nacional |
+| **dev** | ● Proyecto Supabase **`VENTAS-COALSUD`** (ref `menktqlsgtqooneyhalw`, **us-east-1**, ⚙ DT-30): todas las migraciones aplicadas y la Edge Function desplegada. Se usa sin Docker | Deploy preview de Netlify por PR | datos base + seeds de prueba (los 4 usuarios definitivos, ⚙ DT-41) | equipo y validación con el cliente |
+| **prod** | Proyecto Supabase `coalsud-prod` (**Pro**, sa-east-1, ⚠ SUP-40). ● Todavía no creado | Netlify producción (⚙ DT-18; dominio a definir, p. ej. `comercial.coalsud.com.bo`) | datos reales | regionales y nacional |
 
 > En `prod` nunca se corren seeds de prueba ni usuarios `@coalsud.demo`.
 
@@ -49,6 +49,8 @@ Esencial Consultora — El Alto / La Paz, Bolivia
 | Storage | Bucket `facturas` (privado, 10 MB, `application/pdf`), creado por migración |
 | Backups (prod) | Diarios (plan Pro, 7 días de retención); evaluar PITR si el cliente lo requiere |
 
+● **Estado de `VENTAS-COALSUD` (28/10/2026).** Cumplen: Exposed schemas sin `app`, Max rows 1000, JWT de 3600 s, bucket `facturas`. **Pendiente de ajustar en el panel** (Authentication → Sign In / Providers y Policies; API → Settings): `Allow new users to sign up` = off, `Confirm email` = off, mínimo de contraseña 8 (hoy 6), Exposed schemas solo `public` (hoy también `graphql_public`) y Site URL = dominio del frontend cuando exista (hoy `http://localhost:3000`). Mientras tanto, una cuenta creada por signup no ve datos (sin fila en `usuario`, `mi_perfil` → `NO_AUTORIZADO`).
+
 ---
 
 ## 4 · Despliegue del backend
@@ -60,6 +62,7 @@ supabase link --project-ref <ref-dev>        # o <ref-prod>
 
 # cada release
 supabase db push                              # aplica las migraciones pendientes
+#   sin link/Docker (⚙ DT-30): npx supabase db push --db-url "$SUPABASE_DB_URL"
 supabase functions deploy admin-usuarios
 supabase secrets set SUPABASE_SERVICE_ROLE_KEY=…   # solo la primera vez o al rotar
 npm run types                                 # si cambió el esquema

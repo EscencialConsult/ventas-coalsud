@@ -246,10 +246,21 @@ Son `security invoker` (respetan la RLS) o validan el rol por dentro cuando son 
 | `reporte_productos_vendidos` | `p_desde, p_hasta, p_regional_id, p_linea_id, p_vendedor_id, p_limite` | `[{producto_id, producto, linea, unidades, bs_netos}]` |
 | `reporte_rotacion` | `p_regional_id, p_desde, p_hasta` | `[{producto_id, producto, linea, vendidas, stock_inicial, stock_final, stock_promedio, rotacion, dias_inventario}]` |
 | `reporte_ventas_regional` | `p_desde, p_hasta` | `[{regional_id, regional, mes, ventas_netas}]` |
-| `reporte_movimiento_periodo` | `p_regional_id, p_desde, p_hasta` | misma forma que `reporte_liquidacion`, con columnas en Q y Bs (⚠ SUP-54) |
+| `reporte_movimiento_periodo` | `p_regional_id, p_desde, p_hasta` | `{regional, desde, hasta, columnas_extra, lineas, pie}`: la matriz de `reporte_liquidacion` con cada cantidad también en Bs (`saldo_inicial_bs`, `pedido_bs`, `traspaso_bs`, `devolucion_bs`, `ajuste_bs`, `saldo_final_bs`; ventas en Bs cobrados) y `pie` + `cobranzas`, `reembolsos` del rango (⚠ SUP-54, ⚙ DT-32) |
 | `cumplimiento_presupuesto` | `p_periodo, p_regional_id` | `[{presupuesto_id, periodo, regional, vendedor, categoria, meta, real, cumplimiento_pct, proyeccion, estado, regional_id, vendedor_id, observaciones}]` (ids para editar la meta, ⚙ DT-29) |
 | `dashboard_kpis` ● | `p_regional_id`, `p_desde?`, `p_hasta?` (⚙ DT-23; sin ellos, el mes en curso hasta hoy) | `{ventas_hoy, ventas_periodo, variacion_pct, serie: [{fecha, ventas}], cxc?: {saldo, vencido}}` (`cxc` solo para el nacional; `serie` = ventas netas por día del período, para el mini gráfico del KPI, ⚙ DT-21; `ventas_hoy` y `cxc` no dependen del período). Los contadores salen de `avisos_shell` y el % de presupuesto de `cumplimiento_presupuesto`: el frontend no los pide dos veces |
 | `avisos_shell` ● | `p_regional_id` (null = todas las que puede leer) | `{bajo_minimo, notas_sin_factura, dias_pendientes: [{regional_id, fecha, notas_sin_factura}]}`. `dias_pendientes` = liquidaciones abiertas con fecha < hoy. **Un solo request** para los badges del menú, la campana, el BannerDia y los contadores del dashboard |
+
+**Implementación (BE-20 a BE-22):**
+- Ventas netas (top clientes, ventas por regional, presupuesto, dashboard) = notas emitidas del período − devoluciones **con fecha** en el período, atribuidas a la nota original (⚙ DT-31, `app.ventas_netas`).
+- Alcance: `p_regional_id = null` → las regionales que el usuario lee. `reporte_ventas_regional` también (el regional ve solo las suyas, ⚙ DT-33). `eecc_consolidado` responde `SOLO_NACIONAL` a un regional; `reporte_movimiento_periodo`, igual que `reporte_liquidacion`, responde `NO_AUTORIZADO` con una regional ajena; el resto devuelve vacío.
+- Las que recorren ítems (`reporte_productos_vendidos`, `app.ventas_netas`, `app.documentos_por_cobrar`) son `security definer` acotadas a `app.mis_regionales()`, por rendimiento (⚙ DT-39); el resto, `security invoker`.
+- Rango invertido (`p_desde > p_hasta`) en `reporte_movimiento_periodo` y `dashboard_kpis` → `VALIDACION` (`{campo: 'desde', motivo: 'rango_invalido'}`).
+- `p_limite` de los "top": 10 por defecto (el frontend pide 50). `reporte_top_clientes.regional` es el código (`LP`).
+- `reporte_rotacion`: solo productos con algún valor en el período (⚙ DT-34).
+- `cumplimiento_presupuesto`: `p_periodo` nulo → el mes en curso; `proyeccion` nula si no transcurrió ningún día; mes futuro y orden en ⚙ DT-35.
+- `dashboard_kpis.variacion_pct` nula si el período anterior no tuvo ventas (⚙ DT-36). `cxc` sale de `app.documentos_por_cobrar` a hoy.
+- `v_auditoria` (⚙ DT-37): `usuario_nombre = 'Sistema'` sin usuario; `id` es numérico (bigint).
 
 ### 6.1 — Forma de `reporte_liquidacion`
 
@@ -304,6 +315,8 @@ Implementación (BE-18):
   "total_general": { "anterior": 5671.80, "…": 0, "total": 703749.52 }
 }
 ```
+
+Implementación (BE-20, ⚙ DT-38): `p_fecha_corte` nula → hoy; `saldos` y `subtotal` traen todas las columnas (0.00 si no hay saldo); grupos por regional y categoría (supermercado, mayorista, minorista, institucional), clientes por nombre. Saldo, vencido y mora, a la fecha de corte (cobranzas y abonos con fecha ≤ corte, `app.documentos_por_cobrar`).
 
 ---
 

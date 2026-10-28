@@ -1,4 +1,5 @@
 import type { FiltrosReporte, MovimientoPeriodo, ProductoVendido, RotacionProducto, TopCliente, VentaRegionalMes } from '@/core/models/reportes'
+import { COBRANZAS, DEVOLUCIONES } from '@/fixtures/cobranzas'
 import { responder } from '@/fixtures/latencia'
 import { CLIENTES, LINEAS, PRODUCTOS } from '@/fixtures/maestros'
 import { REGIONALES } from '@/fixtures/organizacion'
@@ -103,8 +104,22 @@ const fixtures: ServicioReportes = {
   },
 
   async movimientoPeriodo(regionalId, f, opciones) {
-    const lineas = matriz(regionalId, f.desde, f.hasta)
+    // Cada cantidad también en Bs, a precio base (Reglas §9).
+    const bs = (q: number, precio: number) => redondear(q * precio)
+    const lineas = matriz(regionalId, f.desde, f.hasta).map((l) => ({
+      ...l,
+      productos: l.productos.map((p) => ({
+        ...p,
+        saldo_inicial_bs: bs(p.saldo_inicial, p.precio_unit),
+        pedido_bs: bs(p.pedido, p.precio_unit),
+        traspaso_bs: bs(p.traspaso, p.precio_unit),
+        devolucion_bs: bs(p.devolucion, p.precio_unit),
+        ajuste_bs: bs(p.ajuste, p.precio_unit),
+        saldo_final_bs: bs(p.saldo_final, p.precio_unit),
+      })),
+    }))
     const filas = lineas.flatMap((l) => l.productos)
+    const delRango = (x: { regional_id: string; fecha: string }) => x.regional_id === regionalId && x.fecha >= f.desde && x.fecha <= f.hasta
     const notas = notasDe(regionalId, { ...f, vendedorId: '', categoria: '' })
     const contado = notas.filter((n) => n.condicion_tipo === 'contado')
     const credito = notas.filter((n) => n.condicion_tipo === 'credito')
@@ -120,6 +135,8 @@ const fixtures: ServicioReportes = {
           contado_neto: suma(contado.map((n) => n.total)),
           credito_neto: suma(credito.map((n) => n.total)),
           total_ventas: suma(notas.map((n) => n.total)),
+          cobranzas: suma(COBRANZAS.filter((c) => delRango(c) && c.estado === 'vigente').map((c) => c.importe)),
+          reembolsos: suma(DEVOLUCIONES.filter((d) => delRango(d) && d.tipo_reverso === 'reembolso').map((d) => d.importe)),
         },
       },
       opciones,

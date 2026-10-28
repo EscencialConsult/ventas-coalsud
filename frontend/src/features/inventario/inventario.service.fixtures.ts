@@ -162,7 +162,7 @@ export const inventarioFixtures: ServicioInventario = {
 
     const nuevo = crearDocumento({ ...doc, referencia: limpio(doc.referencia), motivo: limpio(doc.motivo) }, perfilDemoActual()?.nombre ?? 'Sistema', ahoraBolivia())
     for (const e of efectos) aplicarAlStock(e)
-    auditar({ regional_id: nuevo.regional_id, entidad: 'documento_inventario', entidad_id: nuevo.id, registro: nuevo.numero, accion: 'registrar_documento', datos: { tipo: nuevo.tipo, items: nuevo.items, motivo: nuevo.motivo } })
+    auditar({ regional_id: nuevo.regional_id, entidad: 'documento_inventario', entidad_id: nuevo.id, registro: nuevo.numero, accion: `registrar_${nuevo.tipo}` as const, datos: { numero: nuevo.numero, fecha: nuevo.fecha, items: nuevo.items, motivo: nuevo.motivo } })
     return responder({ id: nuevo.id, numero: nuevo.numero })
   },
 }

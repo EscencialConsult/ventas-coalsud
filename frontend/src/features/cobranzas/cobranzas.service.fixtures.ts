@@ -6,7 +6,7 @@ import { COBRANZAS, DEVOLUCIONES, siguienteNumero } from '@/fixtures/cobranzas'
 import { ahoraBolivia, diaCerrado } from '@/fixtures/inventario'
 import { esperar, responder } from '@/fixtures/latencia'
 import { CLIENTES } from '@/fixtures/maestros'
-import { VENDEDORES } from '@/fixtures/organizacion'
+import { REGIONALES, VENDEDORES } from '@/fixtures/organizacion'
 import { exigirNacional, exigirRegionalPropia, limpio, mismoTexto, regionalesLegibles } from '@/fixtures/sesion'
 import { crearSaldoInicial, HOY, moverSaldo, NOTAS, SALDOS } from '@/fixtures/ventas'
 import { formatoFecha } from '@/shared/format/fecha'
@@ -157,7 +157,7 @@ export const cobranzasFixtures: ServicioCobranzas = {
         }),
       )
     }
-    auditar({ regional_id: regionalId, entidad: 'cxc_saldo_inicial', entidad_id: regionalId, registro: `${documentos.length} documentos`, accion: 'cargar_cartera', datos: { insertados: documentos.length } })
+    auditar({ regional_id: regionalId, entidad: 'cxc_saldo_inicial', entidad_id: regionalId, registro: REGIONALES.find((r) => r.id === regionalId)?.nombre ?? '', accion: 'cargar_cartera_inicial', datos: { documentos: documentos.length, total: redondear(documentos.reduce((t, d) => t + d.importe, 0)) } })
     return responder({ insertados: documentos.length })
   },
 }

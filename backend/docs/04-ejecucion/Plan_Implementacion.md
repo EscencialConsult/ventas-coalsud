@@ -18,7 +18,22 @@ Nada de precios, reglas ni permisos en el frontend: el frontend pide y la base d
 
 ---
 
-## Sprint 0 · Setup (~26 h) ← EMPEZÁS ACÁ
+## ● Estado al 28/10/2026 (entrega)
+
+| TAREAS | ESTADO |
+|---|---|
+| BE-01, BE-03 a BE-19 | ✅ Hechas y aplicadas en `VENTAS-COALSUD` (dev) |
+| BE-02 | ◐ Hay un solo proyecto (`VENTAS-COALSUD`, us-east-1, ⚙ DT-30); `prod` no existe. Falta ajustar Auth en el panel (signups off, contraseña ≥ 8, [Entornos §3](Entornos_y_Despliegue.md)) |
+| BE-20 | ✅ `eecc_consolidado` + `app.saldo_documento` (⚙ DT-38) |
+| BE-21 | ✅ Reportes, `reporte_movimiento_periodo`, `cumplimiento_presupuesto`, `dashboard_kpis`, `avisos_shell`, `v_auditoria` + `60_eecc_reportes.test.sql` (⚙ DT-31 a DT-37) |
+| BE-22 | ✅ `verificar_stock`, `70_integridad.test.sql`, concurrencia y rendimiento ([Estrategia de Pruebas §6](Estrategia_de_Pruebas.md)); lecturas optimizadas (⚙ DT-39). Checklist RLS: ver [Seguridad RLS §10](../02-diseno/Seguridad_RLS.md) |
+| BE-23 | ✖ No se hace (decisión del usuario, ⚙ DT-41) |
+| FE-01, FE-03 a FE-24 | ✅ Conectadas al backend real ([Plan del frontend](../../../frontend/docs/08-Plan_Implementacion_Frontend.md)) |
+| FE-02, FE-25, FE-26 | ⏳ Netlify, e2e Playwright y capacitación |
+
+Pruebas: 14 archivos pgTAP en verde (333 pruebas) con `npm run db:test:remoto`; frontend `lint`, `typecheck`, `test` y `build` en verde.
+
+## Sprint 0 · Setup (~26 h)
 | ID | TAREA | H | DEPENDE |
 |---|---|---|---|
 | BE-01 | Carpeta `backend/` + Supabase CLI + `supabase init` + Docker local + `package.json` de scripts | 4 | — |

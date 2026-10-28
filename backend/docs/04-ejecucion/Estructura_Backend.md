@@ -22,8 +22,8 @@ backend/
 │   │   └── 20261027000100_extensiones_y_esquemas.sql …
 │   ├── seeds/                         SOLO datos de prueba; db reset carga seeds/*.sql (config.toml)
 │   │   ├── 10_catalogo_f3.sql         catálogo de la planilla F3 (precios de prueba)
-│   │   ├── 20_usuarios_prueba.sql     irene, ingeniero, vanessa, fernando @coalsud.demo (solo local/dev)
-│   │   └── 30_escenario_f3.sql        movimientos y notas del caso dorado (CP-08.10)
+│   │   └── 20_usuarios_prueba.sql     irene, ingeniero, vanessa, fernando @coalsud.demo (los usuarios definitivos, ⚙ DT-41)
+│   │                                  (el caso dorado F3 se arma dentro de 50_liquidacion.test.sql)
 │   ├── functions/
 │   │   ├── _shared/
 │   │   │   ├── cors.ts
@@ -38,17 +38,23 @@ backend/
 │       ├── 12_maestros.test.sql        políticas de maestros y su auditoría
 │       ├── 15_perfil_usuarios.test.sql  mi_perfil, hoy, RPC admin_*
 │       ├── 20_inventario.test.sql
+│       ├── 22_lecturas_inventario.test.sql  v_stock, v_movimiento, kardex, saldo_vendedores
 │       ├── 30_ventas.test.sql
+│       ├── 32_factura_anulacion.test.sql
+│       ├── 34_hoja_carga.test.sql
+│       ├── 36_devoluciones.test.sql
 │       ├── 40_cobranzas.test.sql
 │       ├── 50_liquidacion.test.sql    incluye el caso dorado F3
-│       ├── 60_eecc_reportes.test.sql
-│       └── 70_integridad.test.sql     verificar_stock, inmutabilidad, auditoría
+│       ├── 52_cierre.test.sql
+│       ├── 60_eecc_reportes.test.sql  EECC, reportes, presupuesto, dashboard, avisos, v_auditoria
+│       └── 70_integridad.test.sql     invariantes de Estrategia de Pruebas §4 (verificar_stock, RLS, inmutabilidad…)
 ├── scripts/
-│   ├── gen-types.mjs                  genera tipos y los copia a ../frontend/src/types/database.ts
-│   ├── concurrencia.mjs               dos emisiones simultáneas sobre el último stock (RNF-02)
-│   └── carga-inicial/
-│       ├── plantillas/                productos.csv, clientes.csv, vendedores.csv, inventario_inicial.csv, cartera_inicial.csv
-│       └── importar.mjs               valida y carga con service_role (solo desde la máquina de quien migra)
+│   ├── gen-types.mjs                  genera tipos (local o del proyecto remoto) y los copia a ../frontend/src/types/database.ts
+│   ├── test-remoto.mjs                pgTAP contra dev sin Docker: cada archivo en una transacción con rollback (⚙ DT-30)
+│   ├── concurrencia.mjs               ventas simultáneas sobre el mismo stock y numeración en paralelo (RNF-02)
+│   └── rendimiento.sql                volumen de ~36.000 notas + mediciones, en una transacción con rollback (RNF-01)
+│   (carga-inicial/ no se construye: la carga inicial real no se hace, ⚙ DT-41. La cartera inicial
+│    se carga desde la pantalla de Cobranzas con cargar_cartera_inicial)
 ├── package.json                       scripts npm (§3)
 ├── .env.example                       variables de los scripts (nunca la service_role en el repo)
 ├── .gitignore                         node_modules, .env*, *.local, supabase/.temp, supabase/.branches, supabase/.env.keys
@@ -101,14 +107,16 @@ backend/
 | `types` | `node scripts/gen-types.mjs` | regenera los tipos del frontend |
 | `fn:serve` | `supabase functions serve admin-usuarios` | prueba local con recarga en caliente (con `db:start` la función ya está servida; una función **nueva** aparece recién al reiniciar el stack) |
 | `fn:deploy` | `supabase functions deploy admin-usuarios` | despliegue |
-| `test:concurrencia` | `node scripts/concurrencia.mjs` | RNF-02 |
+| `db:test:remoto` | `node scripts/test-remoto.mjs [archivo]` | pgTAP contra dev sin Docker; necesita `SUPABASE_DB_URL` (⚙ DT-30) |
+| `db:concurrencia` | `node scripts/concurrencia.mjs` | RNF-02; necesita `SUPABASE_DB_URL`; crea una regional `ZQC` aislada y la borra al terminar |
+| `db:rendimiento` | `psql $SUPABASE_DB_URL -f scripts/rendimiento.sql` | RNF-01 / RNF-03; no deja datos |
 
-Cada script se agrega al `package.json` junto con la tarea que crea su archivo: `types` (BE-03), `fn:*` (BE-07), `test:concurrencia` (BE-22).
+Cada script se agrega al `package.json` junto con la tarea que crea su archivo: `types` (BE-03), `fn:*` (BE-07), `db:test:remoto`, `db:concurrencia` y `db:rendimiento` (BE-22). Sin Docker, `npm run types` toma los tipos del proyecto remoto si están `SUPABASE_PROJECT_REF` y `SUPABASE_ACCESS_TOKEN`. Los scripts leen las variables del entorno (no del `.env`): exportarlas antes.
 
 ## 4 · Flujo de trabajo
 
 1. Rama `feature/<area>-<tema>` desde `main`.
-2. `supabase migration new <tema>` → escribir el SQL → `npm run db:reset` → `npm run db:test`.
+2. `supabase migration new <tema>` → escribir el SQL → `npm run db:reset` → `npm run db:test`. Sin Docker (⚙ DT-30): probar la migración dentro de una transacción con rollback contra dev, `npx supabase db push --db-url $SUPABASE_DB_URL` y `npm run db:test:remoto`.
 3. Si cambió alguna firma: actualizar el [Contrato de API](../03-especificacion/Contrato_API.md) y correr `npm run types`. En el mismo PR (monorepo, ⚙ DT-12), commitear `../frontend/src/types/database.ts`.
 4. PR con:
    - migración;

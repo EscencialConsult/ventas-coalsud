@@ -36,7 +36,7 @@ function generar() {
     auditar({ regional_id: c.regional_id, entidad: 'cobranza', entidad_id: c.id, registro: c.numero, accion: 'registrar_cobranza', created_at: c.created_at, usuario_nombre: c.usuario_nombre, datos: { documento: c.documento_numero, importe: c.importe, forma_pago: c.forma_pago } })
   }
   for (const d of DOCUMENTOS) {
-    auditar({ regional_id: d.regional_id, entidad: 'documento_inventario', entidad_id: d.id, registro: d.numero, accion: 'registrar_documento', created_at: d.created_at, usuario_nombre: d.usuario_nombre, datos: { tipo: d.tipo, items: d.items } })
+    auditar({ regional_id: d.regional_id, entidad: 'documento_inventario', entidad_id: d.id, registro: d.numero, accion: `registrar_${d.tipo}` as const, created_at: d.created_at, usuario_nombre: d.usuario_nombre, datos: { numero: d.numero, fecha: d.fecha, items: d.items } })
   }
   // Cierres de la última semana con movimiento.
   for (const r of REGIONALES) {
@@ -44,7 +44,7 @@ function generar() {
       const fecha = sumarDias(HOY, -i)
       const total = NOTAS.filter((n) => n.regional_id === r.id && n.fecha === fecha && n.estado === 'emitida').reduce((t, n) => t + n.total, 0)
       if (LIQUIDACIONES_ABIERTAS.some((l) => l.regional_id === r.id && l.fecha === fecha)) continue
-      auditar({ regional_id: r.id, entidad: 'liquidacion', entidad_id: `${r.id}|${fecha}`, registro: fecha, accion: 'cerrar_dia', created_at: `${fecha}T20:30:00-04:00`, usuario_nombre: usuarioDe(r.id), datos: { total_ventas: total } })
+      auditar({ regional_id: r.id, entidad: 'liquidacion', entidad_id: `${r.id}|${fecha}`, registro: fecha, accion: 'cerrar_dia', created_at: `${fecha}T20:30:00-04:00`, usuario_nombre: usuarioDe(r.id), datos: { fecha, totales: { total_ventas: total } } })
     }
   }
 }

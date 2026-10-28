@@ -91,14 +91,18 @@ Observaciones para el cliente:
 | `seeds/20_usuarios_prueba.sql` | `irene@coalsud.demo` (nacional), `ingeniero@coalsud.demo` (nacional), `vanessa@coalsud.demo` (regional LP + CBBA), `fernando@coalsud.demo` (regional SCZ). Contraseña `Prueba123!`, `debe_cambiar_password = false`. Cuenta de auth con login por email (`auth.users` + `auth.identities`) |
 | `seeds/20_usuarios_prueba.sql` | Vendedores: LP → Flavia Rivera, Arturo Reynaga, Martha Canedo · CBBA → Jorge León · SCZ → Mario Condori, Sheila, Marcela (nombres de F1/F3/F5, ficticios para pruebas) |
 | `seeds/20_usuarios_prueba.sql` | Clientes, los mismos de los fixtures del frontend: LP → Hipermaxi La Paz, Andys, Macro Abasto, Mi Super, Tienda Rosita · CBBA → Hipermaxi Cochabamba, Super America · SCZ → Fidalga S.A. SCZ, Clínica Foianini (con vendedor, condición, categoría y canal) |
-| `seeds/30_escenario_f3.sql` | Caso dorado ([Estrategia de Pruebas §5](Estrategia_de_Pruebas.md)) |
-| `scripts/volumen.sql` | Volumen para rendimiento (BE-22). Va **fuera** de `seeds/`, para que `db reset` no lo cargue siempre |
+| `50_liquidacion.test.sql` | Caso dorado ([Estrategia de Pruebas §5](Estrategia_de_Pruebas.md)): se arma dentro de la prueba, no hay seed aparte |
+| `scripts/rendimiento.sql` | Volumen para rendimiento (BE-22). Va **fuera** de `seeds/` y corre en una transacción con rollback: no deja datos |
+
+● **Usuarios de la entrega (⚙ DT-41).** Los cuatro usuarios de `20_usuarios_prueba.sql` son los usuarios definidos del sistema y quedan cargados en el proyecto `VENTAS-COALSUD`.
 
 `db reset` carga todo `supabase/seeds/*.sql` en orden alfabético (`config.toml` → `[db.seed] sql_paths`), después de las migraciones.
 
 ---
 
 ## 4 · Carga inicial de producción (CU-12 · BE-23)
+
+> ● **No se hace (decisión del 28/10/2026, ⚙ DT-41).** No se construyen `scripts/carga-inicial/` ni sus plantillas, y no se prueban CP-12.1 ni CP-12.2. Lo que haga falta se carga desde las pantallas, con las mismas reglas: maestros (catálogo, clientes, vendedores), inventario inicial con un **ajuste** de motivo `inventario_inicial` (⚠ SUP-36), cartera inicial desde Cobranzas → "Cargar cartera inicial" (CSV, `cargar_cartera_inicial`, solo nacional) y cierre del día de carga desde Liquidación. Esta sección queda como referencia del procedimiento.
 
 ### 4.1 — Secuencia
 | # | PASO | QUIÉN | CÓMO | CONTROL |

@@ -20,4 +20,6 @@
 
 **Implementación (FE-24):** se lee de `v_auditoria` (⚙ DT-29: nombre del usuario, código de la regional y `registro` legible). El Excel pide todo el filtro en lotes de 1000.
 
+● **Acciones y entidades (⚙ DT-37):** las que escribe la base ([Seguridad RLS §8](../../../backend/docs/02-diseno/Seguridad_RLS.md)): notas, factura, cobranzas, cartera inicial (`cargar_cartera_inicial`), devoluciones y NC contable, los cinco documentos de inventario (`registrar_ingreso`, `registrar_salida`, `registrar_retorno`, `registrar_traspaso`, `registrar_ajuste`), cierre y reapertura, maestros (`crear`, `editar`, `desactivar`, `reactivar`, `cambio_precio_base`) y usuarios (`crear_usuario`, `editar_usuario`, `desactivar_usuario`, `reactivar_usuario`, `resetear_password`). Los filtros de acción y entidad listan todas. El resumen usa las claves reales de `datos`: `cerrar_dia.totales.total_ventas`, `cargar_cartera_inicial.{documentos, total}`, `registrar_<tipo>.items` (arreglo); en "Ver detalle" un objeto anidado (los totales del cierre) se muestra campo por campo y un arreglo como cantidad. Enlaces: nota, documento de inventario, devoluciones, liquidación, cliente, usuarios y presupuesto.
+
 **E2E:** CP-11.1, CP-11.3.

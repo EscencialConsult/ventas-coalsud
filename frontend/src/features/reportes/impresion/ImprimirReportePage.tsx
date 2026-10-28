@@ -6,6 +6,7 @@ import type { CategoriaCliente } from '@/core/models/maestros'
 import type { FiltrosReporte } from '@/core/models/reportes'
 import { useRegionalActiva } from '@/core/regional/useRegionalActiva'
 import { MatrizLiquidacion } from '@/features/liquidacion/components/MatrizLiquidacion'
+import { PieMovimiento } from '../components/PieMovimiento'
 import { formatoFecha } from '@/shared/format/fecha'
 import { HojaA4, PrintLayout } from '@/shared/print/PrintLayout'
 import { cn } from '@/shared/ui/cn'
@@ -78,6 +79,7 @@ function HojaMovimiento({ regionalId, regional, f }: { regionalId: string; regio
         <section className="w-[297mm] bg-fondo p-[8mm] text-mini text-texto shadow-card [page:horizontal] print:w-auto print:p-0 print:shadow-none">
           <Encabezado titulo="Movimiento por período" regional={regional} f={f} />
           <MatrizLiquidacion reporte={consulta.data} impresion />
+          <PieMovimiento pie={consulta.data.pie} />
         </section>
       )}
     </PrintLayout>

@@ -15,6 +15,9 @@ Detalle de las tareas `FE-xx` del [Plan general](../../backend/docs/04-ejecucion
 - los CP E2E de la tarea pasan, o quedan escritos y marcados `fixme` si dependen de un backend que no está.
 
 ### ● Avance
+
+> ● **28/10/2026: conectado al backend real.** Con el backend completo (BE-01 a BE-22) en el proyecto `VENTAS-COALSUD` (⚙ DT-30), el `.env` usa `VITE_MODO_DATOS=supabase`. Las filas "✅ modo fixtures" quedan funcionando contra Supabase. Se verificó contra la API real: las 40 lecturas (`from(...).select(...)`) responden, y cada `rpc()` usa argumentos que existen en su firma; las RPC nuevas responden como nacional y como regional, con sus permisos. Se corrigieron tres desajustes con la base: presupuesto (`categoria_cliente` y `usuario_id`, ⚙ DT-35), acciones y `datos` de auditoría (⚙ DT-37) y el movimiento por período en Bs (⚙ DT-32). `lint`, `typecheck`, `test` (97) y `build` en verde. Pendiente: FE-02 (Netlify), FE-25 (e2e Playwright) y FE-26 (capacitación).
+
 | TAREA | ESTADO | NOTA |
 |---|---|---|
 | FE-01 Proyecto base | ✅ 26/10/2026 | React 19.3 · Vite 8.3 · TS 7 · Tailwind 4.3 · TanStack Query 5 · Router 7 · oxlint · Vitest |

@@ -55,7 +55,8 @@ const fixtures: ServicioPresupuesto = {
   },
 }
 
-const COLUMNAS = 'id, periodo, regional_id, vendedor_id, categoria, meta, observaciones'
+// La columna de la tabla es categoria_cliente (Esquema BD §1.22); el usuario lo pone la base (⚙ DT-35).
+const COLUMNAS = 'id, periodo, regional_id, vendedor_id, categoria:categoria_cliente, meta, observaciones'
 
 const supabaseImpl: ServicioPresupuesto = {
   async cumplimiento(periodo, regionalId, opciones) {
@@ -63,8 +64,9 @@ const supabaseImpl: ServicioPresupuesto = {
     if (opciones?.signal) consulta = consulta.abortSignal(opciones.signal)
     return dato<FilaCumplimiento[]>(await consulta)
   },
-  async guardar(id, datos) {
-    const consulta = id ? supabase().from('presupuesto').update(datos).eq('id', id) : supabase().from('presupuesto').insert(datos)
+  async guardar(id, { categoria, ...resto }) {
+    const fila = { ...resto, categoria_cliente: categoria }
+    const consulta = id ? supabase().from('presupuesto').update(fila).eq('id', id) : supabase().from('presupuesto').insert(fila)
     return dato<Presupuesto>(await consulta.select(COLUMNAS).single())
   },
 }

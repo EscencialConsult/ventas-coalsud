@@ -14,7 +14,9 @@ if (!existsSync(resolve(frontend, 'package.json'))) {
   process.exit(1)
 }
 
-const tipos = execSync('npx supabase gen types typescript --local --schema public', {
+// Con SUPABASE_PROJECT_REF (+ SUPABASE_ACCESS_TOKEN) los toma del proyecto remoto (dev) sin Docker (⚙ DT-30).
+const origen = process.env.SUPABASE_PROJECT_REF ? `--project-id ${process.env.SUPABASE_PROJECT_REF}` : '--local'
+const tipos = execSync(`npx supabase gen types typescript ${origen} --schema public`, {
   cwd: backend,
   encoding: 'utf8',
   maxBuffer: 20 * 1024 * 1024,

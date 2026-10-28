@@ -40,7 +40,8 @@ Menú lateral interno o pestañas. Todos llevan:
 **Implementación (FE-21, FE-22):**
 - Reportes en pestañas (subrutas). Los genéricos comparten una definición (`reportes.definiciones.ts`) que arma la tabla, el Excel y la impresión (`/imprimir/reporte/:clave`). Período por defecto: el mes en curso.
 - Rotación y movimiento por período se calculan por regional: con "Todas" se pide elegir una en el selector.
-- Movimiento por período reutiliza la matriz de la liquidación acumulada en el rango (ventas en Q y Bs); el Excel trae todas las columnas.
+- Movimiento por período reutiliza la matriz de la liquidación acumulada en el rango (ventas en Q y Bs) y debajo muestra cobranzas y reembolsos del período (`components/PieMovimiento.tsx`, también en la impresión). ● El Excel trae todas las columnas y **cada cantidad seguida de su valor en Bs** (`SALDO INICIAL BS`, `PEDIDO BS`, …, `SALDO FINAL BS`, a precio base; Reglas §9, ⚙ DT-32).
+- ● Ventas por regional: el nacional ve las tres; un regional, solo las suyas (⚙ DT-33).
 - EECC: el "drawer" de documentos es un modal; el Excel F4/F5 trae vencido y mora si está marcada la casilla. En la demo, el saldo de cada documento es el de hoy (la base lo calcula a la fecha de corte).
 
 **E2E:** CP-10.1, CP-10.2, CP-10.3, CP-10.4.

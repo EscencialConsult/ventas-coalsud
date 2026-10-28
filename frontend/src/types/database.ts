@@ -3,6 +3,11 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.18";
+  };
   public: {
     Tables: {
       almacen: {
@@ -14,7 +19,6 @@ export type Database = {
           regional_id: string;
           updated_at: string;
         };
-        ComputedFields: never;
         Insert: {
           activo?: boolean;
           created_at?: string;
@@ -45,18 +49,17 @@ export type Database = {
         Row: {
           accion: string;
           created_at: string;
-          datos: NonNullable<Json>;
+          datos: Json;
           entidad: string;
           entidad_id: string;
           id: number;
           regional_id: string | null;
           usuario_id: string | null;
         };
-        ComputedFields: never;
         Insert: {
           accion: string;
           created_at?: string;
-          datos?: NonNullable<Json>;
+          datos?: Json;
           entidad: string;
           entidad_id: string;
           id?: never;
@@ -66,7 +69,7 @@ export type Database = {
         Update: {
           accion?: string;
           created_at?: string;
-          datos?: NonNullable<Json>;
+          datos?: Json;
           entidad?: string;
           entidad_id?: string;
           id?: never;
@@ -94,7 +97,6 @@ export type Database = {
           vendedor_id: string | null;
           zona: string | null;
         };
-        ComputedFields: never;
         Insert: {
           activo?: boolean;
           canal: string;
@@ -174,7 +176,6 @@ export type Database = {
           regional_id: string;
           usuario_id: string;
         };
-        ComputedFields: never;
         Insert: {
           anulada_en?: string | null;
           anulada_por?: string | null;
@@ -267,7 +268,6 @@ export type Database = {
           tipo: string;
           updated_at: string;
         };
-        ComputedFields: never;
         Insert: {
           activo?: boolean;
           created_at?: string;
@@ -296,7 +296,6 @@ export type Database = {
           tipo_documento: string;
           ultimo: number;
         };
-        ComputedFields: never;
         Insert: {
           regional_id: string;
           tipo_documento: string;
@@ -330,7 +329,6 @@ export type Database = {
           regional_id: string;
           usuario_id: string;
         };
-        ComputedFields: never;
         Insert: {
           cliente_id: string;
           created_at?: string;
@@ -392,7 +390,6 @@ export type Database = {
           tipo_reverso: string;
           usuario_id: string;
         };
-        ComputedFields: never;
         Insert: {
           created_at?: string;
           fecha: string;
@@ -456,7 +453,6 @@ export type Database = {
           precio_aplicado: number;
           producto_id: string;
         };
-        ComputedFields: never;
         Insert: {
           cantidad: number;
           devolucion_id: string;
@@ -510,7 +506,6 @@ export type Database = {
           usuario_id: string;
           vendedor_id: string | null;
         };
-        ComputedFields: never;
         Insert: {
           almacen_destino_id?: string | null;
           almacen_id: string;
@@ -584,7 +579,6 @@ export type Database = {
           id: string;
           producto_id: string;
         };
-        ComputedFields: never;
         Insert: {
           cantidad: number;
           documento_id: string;
@@ -630,7 +624,6 @@ export type Database = {
           orden: number;
           updated_at: string;
         };
-        ComputedFields: never;
         Insert: {
           activo?: boolean;
           created_at?: string;
@@ -671,7 +664,6 @@ export type Database = {
           total_ventas: number | null;
           updated_at: string;
         };
-        ComputedFields: never;
         Insert: {
           cerrada_en?: string | null;
           cerrada_por?: string | null;
@@ -762,7 +754,6 @@ export type Database = {
           venta_credito_bs: number;
           venta_credito_q: number;
         };
-        ComputedFields: never;
         Insert: {
           ajuste?: number;
           devolucion?: number;
@@ -856,7 +847,6 @@ export type Database = {
           usuario_id: string;
           vendedor_id: string | null;
         };
-        ComputedFields: never;
         Insert: {
           almacen_id: string;
           cantidad: number;
@@ -994,7 +984,6 @@ export type Database = {
           usuario_id: string;
           vendedor_id: string;
         };
-        ComputedFields: never;
         Insert: {
           anulada_en?: string | null;
           anulada_por?: string | null;
@@ -1009,7 +998,7 @@ export type Database = {
           factura_pdf_path?: string | null;
           factura_registrada_en?: string | null;
           fecha: string;
-          fecha_vencimiento?: never;
+          fecha_vencimiento?: string | null;
           id?: string;
           motivo_anulacion?: string | null;
           numero: string;
@@ -1035,7 +1024,7 @@ export type Database = {
           factura_pdf_path?: string | null;
           factura_registrada_en?: string | null;
           fecha?: string;
-          fecha_vencimiento?: never;
+          fecha_vencimiento?: string | null;
           id?: string;
           motivo_anulacion?: string | null;
           numero?: string;
@@ -1102,7 +1091,6 @@ export type Database = {
           producto_id: string;
           subtotal: number | null;
         };
-        ComputedFields: never;
         Insert: {
           cantidad: number;
           id?: string;
@@ -1110,7 +1098,7 @@ export type Database = {
           precio_aplicado: number;
           precio_base: number;
           producto_id: string;
-          subtotal?: never;
+          subtotal?: number | null;
         };
         Update: {
           cantidad?: number;
@@ -1119,7 +1107,7 @@ export type Database = {
           precio_aplicado?: number;
           precio_base?: number;
           producto_id?: string;
-          subtotal?: never;
+          subtotal?: number | null;
         };
         Relationships: [
           {
@@ -1158,7 +1146,6 @@ export type Database = {
           usuario_id: string;
           vendedor_id: string | null;
         };
-        ComputedFields: never;
         Insert: {
           categoria_cliente?: string | null;
           created_at?: string;
@@ -1220,7 +1207,6 @@ export type Database = {
           stock_minimo: number;
           updated_at: string;
         };
-        ComputedFields: never;
         Insert: {
           activo?: boolean;
           codigo?: string | null;
@@ -1264,7 +1250,6 @@ export type Database = {
           nombre: string;
           updated_at: string;
         };
-        ComputedFields: never;
         Insert: {
           activo?: boolean;
           codigo: string;
@@ -1293,7 +1278,6 @@ export type Database = {
           updated_at: string;
           vendedor_id: string | null;
         };
-        ComputedFields: never;
         Insert: {
           almacen_id: string;
           cantidad?: number;
@@ -1354,7 +1338,6 @@ export type Database = {
           rol: string;
           updated_at: string;
         };
-        ComputedFields: never;
         Insert: {
           activo?: boolean;
           created_at?: string;
@@ -1382,7 +1365,6 @@ export type Database = {
           regional_id: string;
           usuario_id: string;
         };
-        ComputedFields: never;
         Insert: {
           regional_id: string;
           usuario_id: string;
@@ -1418,7 +1400,6 @@ export type Database = {
           telefono: string | null;
           updated_at: string;
         };
-        ComputedFields: never;
         Insert: {
           activo?: boolean;
           created_at?: string;
@@ -1449,34 +1430,49 @@ export type Database = {
       };
     };
     Views: {
+      v_auditoria: {
+        Row: {
+          accion: string | null;
+          created_at: string | null;
+          datos: Json | null;
+          entidad: string | null;
+          entidad_id: string | null;
+          id: number | null;
+          regional_codigo: string | null;
+          regional_id: string | null;
+          registro: string | null;
+          usuario_id: string | null;
+          usuario_nombre: string | null;
+        };
+        Relationships: [];
+      };
       v_cobranza: {
         Row: {
           anulada_en: string | null;
           anulada_por: string | null;
           cliente_id: string | null;
-          cliente_nombre: string;
-          created_at: string;
+          cliente_nombre: string | null;
+          created_at: string | null;
           cxc_saldo_inicial_id: string | null;
           dia_cerrado: boolean | null;
           documento_numero: string | null;
-          estado: string;
-          fecha: string;
-          forma_pago: string;
-          id: string;
-          importe: number;
+          estado: string | null;
+          fecha: string | null;
+          forma_pago: string | null;
+          id: string | null;
+          importe: number | null;
           motivo_anulacion: string | null;
           nota_venta_id: string | null;
-          numero: string;
+          numero: string | null;
           numero_factura: string | null;
           observaciones: string | null;
           referencia_pago: string | null;
-          regional_id: string;
+          regional_id: string | null;
           tipo_doc: string | null;
-          usuario_id: string;
+          usuario_id: string | null;
           usuario_nombre: string | null;
           vendedor_id: string | null;
         };
-        ComputedFields: never;
         Relationships: [
           {
             foreignKeyName: "cobranza_anulada_por_fkey";
@@ -1524,23 +1520,22 @@ export type Database = {
       };
       v_devolucion: {
         Row: {
-          cliente_id: string;
-          cliente_nombre: string;
-          created_at: string;
-          fecha: string;
-          id: string;
+          cliente_id: string | null;
+          cliente_nombre: string | null;
+          created_at: string | null;
+          fecha: string | null;
+          id: string | null;
           importe: number | null;
-          motivo: string;
+          motivo: string | null;
           nc_contable_numero: string | null;
-          nota_numero: string;
-          nota_venta_id: string;
-          numero: string;
-          regional_id: string;
-          tipo_reverso: string;
-          usuario_id: string;
+          nota_numero: string | null;
+          nota_venta_id: string | null;
+          numero: string | null;
+          regional_id: string | null;
+          tipo_reverso: string | null;
+          usuario_id: string | null;
           usuario_nombre: string | null;
         };
-        ComputedFields: never;
         Relationships: [
           {
             foreignKeyName: "devolucion_nota_venta_id_fkey";
@@ -1583,23 +1578,22 @@ export type Database = {
         Row: {
           almacen_destino_id: string | null;
           almacen_destino_nombre: string | null;
-          almacen_id: string;
-          almacen_nombre: string;
-          created_at: string;
-          fecha: string;
-          id: string;
+          almacen_id: string | null;
+          almacen_nombre: string | null;
+          created_at: string | null;
+          fecha: string | null;
+          id: string | null;
           items: number | null;
           motivo: string | null;
-          numero: string;
+          numero: string | null;
           referencia: string | null;
           regional_destino_id: string | null;
-          regional_id: string;
-          tipo: string;
+          regional_id: string | null;
+          tipo: string | null;
           usuario_nombre: string | null;
           vendedor_id: string | null;
           vendedor_nombre: string | null;
         };
-        ComputedFields: never;
         Relationships: [
           {
             foreignKeyName: "almacen_regional_id_fkey";
@@ -1643,26 +1637,25 @@ export type Database = {
           cerrada_en: string | null;
           cerrada_por: string | null;
           cerrada_por_nombre: string | null;
-          created_at: string;
+          created_at: string | null;
           descuento_contado: number | null;
           descuento_credito: number | null;
-          estado: string;
-          fecha: string;
-          id: string;
+          estado: string | null;
+          fecha: string | null;
+          id: string | null;
           motivo_reapertura: string | null;
           reabierta_en: string | null;
           reabierta_por: string | null;
-          regional_codigo: string;
-          regional_id: string;
+          regional_codigo: string | null;
+          regional_id: string | null;
           total_cobranzas: number | null;
           total_contado_bruto: number | null;
           total_credito_bruto: number | null;
           total_efectivo: number | null;
           total_reembolsos: number | null;
           total_ventas: number | null;
-          updated_at: string;
+          updated_at: string | null;
         };
-        ComputedFields: never;
         Relationships: [
           {
             foreignKeyName: "liquidacion_cerrada_por_fkey";
@@ -1689,25 +1682,24 @@ export type Database = {
       };
       v_movimiento: {
         Row: {
-          almacen_id: string;
-          almacen_nombre: string;
-          cantidad: number;
-          created_at: string;
+          almacen_id: string | null;
+          almacen_nombre: string | null;
+          cantidad: number | null;
+          created_at: string | null;
           devolucion_id: string | null;
           documento_id: string | null;
           documento_numero: string | null;
-          fecha: string;
-          id: string;
+          fecha: string | null;
+          id: string | null;
           nota_venta_id: string | null;
-          producto_id: string;
-          producto_nombre: string;
-          regional_id: string;
-          tipo: string;
+          producto_id: string | null;
+          producto_nombre: string | null;
+          regional_id: string | null;
+          tipo: string | null;
           usuario_nombre: string | null;
           vendedor_id: string | null;
           vendedor_nombre: string | null;
         };
-        ComputedFields: never;
         Relationships: [
           {
             foreignKeyName: "movimiento_inventario_almacen_id_fkey";
@@ -1787,43 +1779,42 @@ export type Database = {
           anulada_en: string | null;
           anulada_por: string | null;
           bruto: number | null;
-          canal: string;
-          cliente_id: string;
+          canal: string | null;
+          cliente_id: string | null;
           cliente_nit: string | null;
-          cliente_nombre: string;
+          cliente_nombre: string | null;
           cobrado: number | null;
-          condicion_nombre: string;
-          condicion_pago_id: string;
-          condicion_tipo: string;
-          created_at: string;
+          condicion_nombre: string | null;
+          condicion_pago_id: string | null;
+          condicion_tipo: string | null;
+          created_at: string | null;
           descuento_bs: number | null;
-          descuento_pct: number;
+          descuento_pct: number | null;
           dia_cerrado: boolean | null;
-          dias_credito: number;
-          estado: string;
+          dias_credito: number | null;
+          estado: string | null;
           factura_pdf_path: string | null;
           factura_registrada_en: string | null;
-          fecha: string;
+          fecha: string | null;
           fecha_vencimiento: string | null;
-          id: string;
+          id: string | null;
           motivo_anulacion: string | null;
-          numero: string;
+          numero: string | null;
           numero_factura: string | null;
           observaciones: string | null;
-          origen_stock: string;
+          origen_stock: string | null;
           pendiente_factura: boolean | null;
-          regional_codigo: string;
-          regional_id: string;
+          regional_codigo: string | null;
+          regional_id: string | null;
           saldo: number | null;
           tiene_devolucion: boolean | null;
           total: number | null;
-          updated_at: string;
-          usuario_id: string;
+          updated_at: string | null;
+          usuario_id: string | null;
           usuario_nombre: string | null;
-          vendedor_id: string;
-          vendedor_nombre: string;
+          vendedor_id: string | null;
+          vendedor_nombre: string | null;
         };
-        ComputedFields: never;
         Relationships: [
           {
             foreignKeyName: "nota_venta_anulada_por_fkey";
@@ -1888,28 +1879,26 @@ export type Database = {
           vencido: boolean | null;
           vendedor_id: string | null;
         };
-        ComputedFields: never;
         Relationships: [];
       };
       v_stock: {
         Row: {
           almacen_id: string | null;
-          almacen_nombre: string;
+          almacen_nombre: string | null;
           bajo_minimo: boolean | null;
           cantidad: number | null;
-          linea_id: string;
-          linea_nombre: string;
+          linea_id: string | null;
+          linea_nombre: string | null;
           orden: number | null;
-          precio_base: number;
+          precio_base: number | null;
           producto_id: string | null;
-          producto_nombre: string;
+          producto_nombre: string | null;
           regional_id: string | null;
-          stock_minimo: number;
+          stock_minimo: number | null;
           ubicacion: string | null;
           vendedor_id: string | null;
           vendedor_nombre: string | null;
         };
-        ComputedFields: never;
         Relationships: [
           {
             foreignKeyName: "producto_linea_id_fkey";
@@ -1947,14 +1936,49 @@ export type Database = {
         };
         Returns: Json;
       };
-      admin_marcar_reseteo: { Args: { p_actor: string; p_id: string }; Returns: undefined };
-      anular_cobranza: { Args: { p_cobranza_id: string; p_motivo: string }; Returns: Json };
-      anular_nota_venta: { Args: { p_motivo: string; p_nota_id: string }; Returns: Json };
+      admin_marcar_reseteo: {
+        Args: { p_actor: string; p_id: string };
+        Returns: undefined;
+      };
+      anular_cobranza: {
+        Args: { p_cobranza_id: string; p_motivo: string };
+        Returns: Json;
+      };
+      anular_nota_venta: {
+        Args: { p_motivo: string; p_nota_id: string };
+        Returns: Json;
+      };
+      avisos_shell: { Args: { p_regional_id?: string }; Returns: Json };
       cargar_cartera_inicial: {
         Args: { p_documentos: Json; p_regional_id: string };
         Returns: Json;
       };
-      cerrar_liquidacion: { Args: { p_fecha: string; p_regional_id: string }; Returns: Json };
+      cerrar_liquidacion: {
+        Args: { p_fecha: string; p_regional_id: string };
+        Returns: Json;
+      };
+      cumplimiento_presupuesto: {
+        Args: { p_periodo: string; p_regional_id?: string };
+        Returns: {
+          categoria: string;
+          cumplimiento_pct: number;
+          estado: string;
+          meta: number;
+          observaciones: string;
+          periodo: string;
+          presupuesto_id: string;
+          proyeccion: number;
+          real: number;
+          regional: string;
+          regional_id: string;
+          vendedor: string;
+          vendedor_id: string;
+        }[];
+      };
+      dashboard_kpis: {
+        Args: { p_desde?: string; p_hasta?: string; p_regional_id?: string };
+        Returns: Json;
+      };
       dias_pendientes_cierre: {
         Args: { p_regional_id?: string };
         Returns: {
@@ -1962,6 +1986,14 @@ export type Database = {
           notas_sin_factura: number;
           regional_id: string;
         }[];
+      };
+      eecc_consolidado: {
+        Args: {
+          p_categoria?: string;
+          p_fecha_corte: string;
+          p_regional_id?: string;
+        };
+        Returns: Json;
       };
       emitir_nota_venta: {
         Args: {
@@ -1983,9 +2015,14 @@ export type Database = {
         Args: { p_fecha: string; p_regional_id: string; p_vendedor_id?: string };
         Returns: Json;
       };
-      hoy: { Args: Record<PropertyKey, never>; Returns: string };
+      hoy: { Args: never; Returns: string };
       ingresos_vendedores: {
-        Args: { p_desde?: string; p_detalle?: boolean; p_hasta?: string; p_regional_id?: string };
+        Args: {
+          p_desde?: string;
+          p_detalle?: boolean;
+          p_hasta?: string;
+          p_regional_id?: string;
+        };
         Returns: Json;
       };
       kardex: {
@@ -2007,15 +2044,20 @@ export type Database = {
           usuario: string;
         }[];
       };
-      marcar_password_cambiado: { Args: Record<PropertyKey, never>; Returns: undefined };
+      marcar_password_cambiado: { Args: never; Returns: undefined };
       max_devolvible: { Args: { p_nota_id: string }; Returns: Json };
-      mi_perfil: { Args: Record<PropertyKey, never>; Returns: Json };
+      mi_perfil: { Args: never; Returns: Json };
       reabrir_liquidacion: {
         Args: { p_fecha: string; p_motivo: string; p_regional_id: string };
         Returns: Json;
       };
       registrar_ajuste: {
-        Args: { p_almacen_id: string; p_fecha: string; p_items: Json; p_motivo: string };
+        Args: {
+          p_almacen_id: string;
+          p_fecha: string;
+          p_items: Json;
+          p_motivo: string;
+        };
         Returns: Json;
       };
       registrar_cobranzas: {
@@ -2030,18 +2072,35 @@ export type Database = {
         Returns: Json;
       };
       registrar_devolucion: {
-        Args: { p_items: Json; p_motivo: string; p_nota_id: string; p_tipo_reverso: string };
+        Args: {
+          p_items: Json;
+          p_motivo: string;
+          p_nota_id: string;
+          p_tipo_reverso: string;
+        };
         Returns: Json;
       };
       registrar_factura_nota: {
-        Args: { p_factura_pdf_path: string; p_nota_id: string; p_numero_factura: string };
+        Args: {
+          p_factura_pdf_path: string;
+          p_nota_id: string;
+          p_numero_factura: string;
+        };
         Returns: Json;
       };
       registrar_ingreso: {
-        Args: { p_almacen_id: string; p_fecha: string; p_items: Json; p_referencia: string };
+        Args: {
+          p_almacen_id: string;
+          p_fecha: string;
+          p_items: Json;
+          p_referencia: string;
+        };
         Returns: Json;
       };
-      registrar_nc_contable: { Args: { p_devolucion_id: string; p_numero: string }; Returns: Json };
+      registrar_nc_contable: {
+        Args: { p_devolucion_id: string; p_numero: string };
+        Returns: Json;
+      };
       registrar_retorno: {
         Args: {
           p_almacen_id: string;
@@ -2072,7 +2131,72 @@ export type Database = {
         };
         Returns: Json;
       };
-      reporte_liquidacion: { Args: { p_fecha: string; p_regional_id: string }; Returns: Json };
+      reporte_liquidacion: {
+        Args: { p_fecha: string; p_regional_id: string };
+        Returns: Json;
+      };
+      reporte_movimiento_periodo: {
+        Args: { p_desde: string; p_hasta: string; p_regional_id: string };
+        Returns: Json;
+      };
+      reporte_productos_vendidos: {
+        Args: {
+          p_desde: string;
+          p_hasta: string;
+          p_limite?: number;
+          p_linea_id?: string;
+          p_regional_id?: string;
+          p_vendedor_id?: string;
+        };
+        Returns: {
+          bs_netos: number;
+          linea: string;
+          producto: string;
+          producto_id: string;
+          unidades: number;
+        }[];
+      };
+      reporte_rotacion: {
+        Args: { p_desde: string; p_hasta: string; p_regional_id: string };
+        Returns: {
+          dias_inventario: number;
+          linea: string;
+          producto: string;
+          producto_id: string;
+          rotacion: number;
+          stock_final: number;
+          stock_inicial: number;
+          stock_promedio: number;
+          vendidas: number;
+        }[];
+      };
+      reporte_top_clientes: {
+        Args: {
+          p_categoria?: string;
+          p_desde: string;
+          p_hasta: string;
+          p_limite?: number;
+          p_regional_id?: string;
+          p_vendedor_id?: string;
+        };
+        Returns: {
+          categoria: string;
+          cliente: string;
+          cliente_id: string;
+          notas: number;
+          regional: string;
+          ventas_netas: number;
+        }[];
+      };
+      reporte_ventas_regional: {
+        Args: { p_desde: string; p_hasta: string };
+        Returns: {
+          mes: string;
+          regional: string;
+          regional_id: string;
+          ventas_netas: number;
+        }[];
+      };
       saldo_vendedores: {
         Args: { p_desde?: string; p_hasta?: string; p_regional_id?: string };
         Returns: {
@@ -2112,7 +2236,9 @@ export type Tables<
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R;
@@ -2136,7 +2262,9 @@ export type TablesInsert<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I;
     }
@@ -2159,7 +2287,9 @@ export type TablesUpdate<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U;
     }
@@ -2182,7 +2312,9 @@ export type Enums<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never) = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
@@ -2197,7 +2329,9 @@ export type CompositeTypes<
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never) = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals;
+}
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]

@@ -235,11 +235,15 @@ Subir un PDF se permite **aunque el día esté cerrado** (⚠ SUP-06).
 
 **Acciones auditadas** (`auditoria.accion`):
 - notas: `emitir_nota`, `anular_nota`, `registrar_factura`, `cambio_precio`, `descuento`;
-- devoluciones y cobranzas: `registrar_devolucion`, `registrar_cobranza`, `anular_cobranza`, `cargar_cartera_inicial`;
+- devoluciones y cobranzas: `registrar_devolucion`, `registrar_nc_contable`, `registrar_cobranza`, `anular_cobranza`, `cargar_cartera_inicial`;
 - inventario: `registrar_ingreso`, `registrar_salida`, `registrar_retorno`, `registrar_traspaso`, `registrar_ajuste`;
 - liquidación: `cerrar_dia`, `reabrir_dia`;
 - maestros: `crear` / `editar` / `desactivar` / `reactivar` / `cambio_precio_base` (por trigger, `tg_auditar_maestro`);
-- usuarios: `crear_usuario`, `editar_usuario`, `desactivar_usuario`, `resetear_password`.
+- usuarios: `crear_usuario`, `editar_usuario`, `desactivar_usuario`, `reactivar_usuario`, `resetear_password`.
+
+La vista `v_auditoria` (invoker) suma nombres y un `registro` legible; la RLS de `auditoria` la deja solo al nacional (⚙ DT-37).
+
+● **Lecturas calculadas definer (⚙ DT-39).** `app.ventas_netas`, `app.documentos_por_cobrar` y `reporte_productos_vendidos` saltan la RLS por rendimiento (la política de las tablas hijas se evaluaba por ítem) y acotan explícitamente a `regional_id in (select app.mis_regionales())`: devuelven exactamente lo que la RLS dejaría ver. Las demás lecturas nuevas (`reporte_top_clientes`, `reporte_rotacion`, `reporte_ventas_regional`, `cumplimiento_presupuesto`, `dashboard_kpis`, `avisos_shell`) son invoker; `eecc_consolidado` y `reporte_movimiento_periodo` son definer con guarda (`SOLO_NACIONAL` / `puede_leer_regional`). Además de las funciones de contexto, `authenticated` ejecuta en `app`: `hoy`, `error`, `ultimo_cierre`, `nombre_usuario`, `importe_devolucion`, `cuenta_nota`, `carpeta_regional`, `ventas_netas` y `documentos_por_cobrar`.
 
 ---
 
@@ -275,6 +279,14 @@ La batería completa se corre con pgTAP (`supabase test db`, archivo `tests/10_r
 - [ ] `anon` sin privilegios sobre `public`; esquema `app` no expuesto en la configuración de la API.
 - [ ] `supabase test db` en verde (incluye `rls.test.sql`).
 - [ ] Backups diarios activos (plan Pro, ⚠ SUP-40).
+
+**Estado en dev (`VENTAS-COALSUD`, 28/10/2026):**
+- ✅ RLS en todas las tablas, `anon` sin privilegios, sin políticas de escritura transaccionales, inmutabilidad: lo verifica `70_integridad.test.sql`.
+- ✅ `service_role` solo en la Edge Function (variable del entorno de Supabase) y en `CREDENCIALES.md`, que está en `.gitignore`.
+- ✅ `app` no expuesto; ⚠ la API expone `public` y `graphql_public` (el valor de Supabase por defecto; la doc pide solo `public`).
+- ⚠ **Auth todavía con signups habilitados, contraseña mínima de 6 y confirmación de correo activa**: hay que dejar `disable_signup = true`, mínimo 8 y confirmación off (Entornos §3). Una cuenta creada por signup no ve nada (no tiene fila en `usuario`: `mi_perfil` → `NO_AUTORIZADO`), pero la regla es cerrarlo.
+- ✅ Pruebas en verde con `npm run db:test:remoto` (14 archivos, 333 pruebas).
+- ⚠ Backups: según el plan del proyecto (⚠ SUP-40).
 
 ---
 

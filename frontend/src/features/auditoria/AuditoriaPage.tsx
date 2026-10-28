@@ -113,7 +113,7 @@ export default function AuditoriaPage() {
         <SeccionConsulta consulta={consulta}>
           {(datos) => (
             <>
-              <Tabla etiqueta="Auditoría" columnas={columnas} filas={datos.filas} claveFila={(r) => r.id} vacio={<EmptyState icono={ShieldCheck} titulo="Sin registros con esos filtros" />} />
+              <Tabla etiqueta="Auditoría" columnas={columnas} filas={datos.filas} claveFila={(r) => String(r.id)} vacio={<EmptyState icono={ShieldCheck} titulo="Sin registros con esos filtros" />} />
               <Paginacion pagina={pagina} total={datos.total} porPagina={POR_PAGINA} unidad="registros" alCambiar={(p) => cambiar({ pagina: String(p) })} />
             </>
           )}
